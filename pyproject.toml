@@ -5,9 +5,11 @@ description = "Applied AI / data science portfolio projects with measured result
 requires-python = ">=3.11"
 dependencies = [
     "anthropic",
+    "numpy>=2.4.6",
     "openai",
     "pydantic>=2",
     "python-dotenv",
+    "tiktoken>=0.14.0",
 ]
 
 [dependency-groups]
@@ -17,7 +19,7 @@ dev = ["pytest", "ruff"]
 package = false
 
 [tool.pytest.ini_options]
-pythonpath = ["."]
+pythonpath = [".", "projects/01-rag-with-evals"]
 testpaths = ["shared", "projects"]
 addopts = "--import-mode=importlib"
 

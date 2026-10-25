@@ -11,15 +11,16 @@ Status: `todo` · `in-progress` · `review` · `done`
   - [ ] CI green on GitHub (needs `gh` + a remote)
   - [ ] Docker Desktop installed (needed for pgvector / 01-M6)
 
-## 01-M1 · Ingestion + chunking — `todo`
+## 01-M1 · Ingestion + chunking — `paused` (2026-10-25, on branch `01-m1-chunking`)
 - Goal: load the GitLab handbook's People/HR policy pages and chunk them two ways.
 - You implement (core logic): `load_docs`, `chunk_fixed`, `chunk_by_heading`.
+- Paused to start 03 (DS first). Scaffolding + spec tests are on the branch; tests fail with NotImplementedError until you implement.
 - Acceptance:
-  - [ ] Raw pages fetched by a script into `data/raw/` (not committed)
+  - [x] Raw pages fetched by a script into `data/raw/` (not committed) — `scripts/fetch_handbook.sh`, pinned commit, 93 pages
   - [ ] Tests: no empty chunks; exact overlap; no text lost; every chunk <= max_tokens; heading path present
   - [ ] Stats table per strategy: chunk count, token length p50/p95/max
   - [ ] DECISIONS.md entry on chunk size/overlap; LEARNINGS.md entry in your own words
 - **The bet** (fill in before writing code):
-  - Your prediction: heading-aware beats fixed-size (512 tok, 64 overlap) on recall@5 by ___ points.
+  - Your prediction: heading-aware beats fixed-size (512 tok, 64 overlap) on recall@5 by **8** points.
   - Claude's prediction: < 5 points; the M2 reranker moves recall more than chunking does.
   - Settled at: 01-M5.
