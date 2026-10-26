@@ -23,3 +23,22 @@ Status: `todo` · `in-progress` · `review` · `done`
   - Your prediction: heading-aware beats fixed-size (512 tok, 64 overlap) on recall@5 by ___ points.
   - Claude's prediction: < 5 points; the M2 reranker moves recall more than chunking does.
   - Settled at: 01-M5.
+
+## 03 · Attrition model — milestones
+Data: IBM HR Analytics Employee Attrition (fictional data created by IBM), 1,470 rows, 237 leavers (16%).
+
+### 03-M1 · Data, locked test split, EDA — `in-progress` (branch `03-m1-eda`)
+- Goal: a checksum-pinned dataset, a stratified test set locked before EDA, and an EDA notebook with written findings.
+- Acceptance:
+  - [x] `scripts/fetch_data.sh` downloads + verifies SHA-256
+  - [x] `attrition/split.py::make_split` (Rohit) — stratified 80/20, seeded; 4 tests pass
+  - [ ] EDA notebook on **train only**, with findings written as claims + numbers
+  - [ ] Leakage audit: every column marked known-at-prediction-time / ID-or-constant / suspicious
+  - [ ] Business framing written down: HR capacity-limited → precision@k (Rohit's pick)
+  - [ ] DECISIONS + LEARNINGS entries; 5-question interview
+- **The bet** (fill in before M2): LightGBM beats logistic regression on PR-AUC by ___ points. Claude: < 3 points, LR may win.
+
+### 03-M2 · Validation harness + logistic regression baseline — `todo`
+### 03-M3 · LightGBM, imbalance handling, operating threshold — `todo`
+### 03-M4 · SHAP + 3 CHRO recommendations — `todo`
+### 03-M5 · Model card, fairness checks, README — `todo`

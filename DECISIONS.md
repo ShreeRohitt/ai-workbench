@@ -19,3 +19,8 @@
 - Chose: Chroma for 01-M2 until Docker is installed.
 - Alternatives: pgvector now (blocked: no Docker).
 - Why: unblocks retrieval work; revisit at M6 when we containerise anyway.
+
+## 2026-10-26 · 03: lock a stratified 20% test set before EDA
+- Chose: `make_split(df, test_size=0.2, seed=42)`, stratified on Attrition; EDA and all model selection use train only.
+- Alternatives: EDA on all rows + CV only; nested CV with no holdout.
+- Why: anything seen during EDA shapes modelling choices, so the test set must be unseen. Cost: ~47 test leavers, so test metrics get wide CIs — we'll report bootstrap intervals.
