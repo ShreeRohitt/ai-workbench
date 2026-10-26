@@ -33,12 +33,13 @@ Data: IBM HR Analytics Employee Attrition (fictional data created by IBM), 1,470
   - [x] `scripts/fetch_data.sh` downloads + verifies SHA-256
   - [x] `attrition/split.py::make_split` (Rohit) — stratified 80/20, seeded; 4 tests pass
   - [ ] EDA notebook on **train only**, with findings written as claims + numbers
-  - [ ] Leakage audit: every column marked known-at-prediction-time / ID-or-constant / suspicious
+  - [x] Leakage audit: every column marked known-at-prediction-time / ID-or-constant / suspicious (`docs/column_audit.md`)
   - [ ] Business framing written down: HR capacity-limited → precision@k (Rohit's pick)
   - [ ] DECISIONS + LEARNINGS entries; 5-question interview
 - **The bet** (fill in before M2): LightGBM beats logistic regression on PR-AUC by ___ points. Claude: < 3 points, LR may win.
 
 ### 03-M2 · Validation harness + logistic regression baseline — `todo`
+- Planned experiment: train with vs without the 5 survey columns (timing unknown) and report both.
 ### 03-M3 · LightGBM, imbalance handling, operating threshold — `todo`
 ### 03-M4 · SHAP + 3 CHRO recommendations — `todo`
 ### 03-M5 · Model card, fairness checks, README — `todo`

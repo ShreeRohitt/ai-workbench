@@ -5,6 +5,7 @@ description = "Applied AI / data science portfolio projects with measured result
 requires-python = ">=3.11"
 dependencies = [
     "anthropic",
+    "matplotlib>=3.11.2",
     "openai",
     "pandas>=3.1.0",
     "pydantic>=2",
