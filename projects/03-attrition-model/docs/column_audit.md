@@ -6,12 +6,13 @@ Computed on the **training set** (1,176 rows). Fill in the last two columns for 
 - `use` — known *before* someone leaves; fair input for the model
 - `drop: id/constant` — an identifier, or the same value for everyone
 - `suspicious` — might be measured *after* (or because of) the decision to leave, or we can't tell when it was measured
+- `protected: fairness only` — known before leaving, but kept out of the model; used only for fairness checks (M5)
 
 **Reason** — one short sentence. "Seems fine" is not a reason.
 
 | Column | Type | Distinct values | Examples | Category | Reason |
 |---|---|---:|---|---|---|
-| Age | int64 | 43 | 47, 22, 46 |  suspicious|  known before, can be used to check fairness|
+| Age | int64 | 43 | 47, 22, 46 | protected: fairness only | known before leaving; kept out of the model, baseline for M5 fairness checks (proxied by TotalWorkingYears, ρ = 0.67) |
 | Attrition | int64 | 2 | 0, 1 | target | What we predict (1 = left). |
 | BusinessTravel | str | 3 | Travel_Rarely, Travel_Frequently, Non-Travel | use | fair input w get before leaving |
 | DailyRate | int64 | 787 | 1225, 594, 406 | drop: noise | correlation with MonthlyIncome = 0.02; not pay, looks like synthetic noise |
@@ -22,13 +23,13 @@ Computed on the **training set** (1,176 rows). Fill in the last two columns for 
 | EmployeeCount | int64 | 1 | 1 | drop: constant | unncessary |
 | EmployeeNumber | int64 | 1176 | 1676, 169, 1124 | drop:id | unique to everyone   |
 | EnvironmentSatisfaction | int64 | 4 | 2, 3, 1 | suspicious | can be used as a metric but don't know wwhen they've taken |
-| Gender | str | 2 | Female, Male | suspicious | can use for fairness |
+| Gender | str | 2 | Female, Male | protected: fairness only | known before leaving; kept out of the model, baseline for M5 fairness checks |
 | HourlyRate | int64 | 71 | 47, 100, 52 | drop: noise | correlation with MonthlyIncome = 0.00; not pay, looks like synthetic noise |
 | JobInvolvement | int64 | 4 | 4, 3, 1 | suspicious| unknown timing |
 | JobLevel | int64 | 5 | 4, 1, 2 |  use| to see which job level has attrition |
 | JobRole | str | 9 | Manager, Laboratory Technician, Sales Representative | use |  can be used to calculate|
 | JobSatisfaction | int64 | 4 | 2, 4, 3 | suspicious | unknown timing|
-| MaritalStatus | str | 3 | Divorced, Married, Single | suspicious | can be used to check fairness |
+| MaritalStatus | str | 3 | Divorced, Married, Single | protected: fairness only | known before leaving; kept out of the model, baseline for M5 fairness checks (proxied by StockOptionLevel: all Single = 0) |
 | MonthlyIncome | int64 | 1098 | 15972, 2523, 17465 | use | used as a metric |
 | MonthlyRate | int64 | 1153 | 21086, 19299, 15596 | drop: noise | correlation with MonthlyIncome = 0.04; not pay, looks like synthetic noise |
 | NumCompaniesWorked | int64 | 10 | 6, 0, 3 | use | can be used to see if they're jumpers |
