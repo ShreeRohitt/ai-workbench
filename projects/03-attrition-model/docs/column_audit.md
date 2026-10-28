@@ -14,7 +14,7 @@ Computed on the **training set** (1,176 rows). Fill in the last two columns for 
 | Age | int64 | 43 | 47, 22, 46 |  suspicious|  known before, can be used to check fairness|
 | Attrition | int64 | 2 | 0, 1 | target | What we predict (1 = left). |
 | BusinessTravel | str | 3 | Travel_Rarely, Travel_Frequently, Non-Travel | use | fair input w get before leaving |
-| DailyRate | int64 | 787 | 1225, 594, 406 | suspicious | not related |
+| DailyRate | int64 | 787 | 1225, 594, 406 | drop: noise | correlation with MonthlyIncome = 0.02; not pay, looks like synthetic noise |
 | Department | str | 3 | Sales, Research & Development, Human Resources |  use| fair input to categorize on dept |
 | DistanceFromHome | int64 | 29 | 2, 3, 13 | use | we can calculate if people far away from work leave |
 | Education | int64 | 5 | 4, 1, 5 | use | can be used as a metric to see if highly educated peopel leave |
@@ -23,14 +23,14 @@ Computed on the **training set** (1,176 rows). Fill in the last two columns for 
 | EmployeeNumber | int64 | 1176 | 1676, 169, 1124 | drop:id | unique to everyone   |
 | EnvironmentSatisfaction | int64 | 4 | 2, 3, 1 | suspicious | can be used as a metric but don't know wwhen they've taken |
 | Gender | str | 2 | Female, Male | suspicious | can use for fairness |
-| HourlyRate | int64 | 71 | 47, 100, 52 | suspicious | not related |
+| HourlyRate | int64 | 71 | 47, 100, 52 | drop: noise | correlation with MonthlyIncome = 0.00; not pay, looks like synthetic noise |
 | JobInvolvement | int64 | 4 | 4, 3, 1 | suspicious| unknown timing |
 | JobLevel | int64 | 5 | 4, 1, 2 |  use| to see which job level has attrition |
 | JobRole | str | 9 | Manager, Laboratory Technician, Sales Representative | use |  can be used to calculate|
 | JobSatisfaction | int64 | 4 | 2, 4, 3 | suspicious | unknown timing|
 | MaritalStatus | str | 3 | Divorced, Married, Single | suspicious | can be used to check fairness |
 | MonthlyIncome | int64 | 1098 | 15972, 2523, 17465 | use | used as a metric |
-| MonthlyRate | int64 | 1153 | 21086, 19299, 15596 | suspicious | not related|
+| MonthlyRate | int64 | 1153 | 21086, 19299, 15596 | drop: noise | correlation with MonthlyIncome = 0.04; not pay, looks like synthetic noise |
 | NumCompaniesWorked | int64 | 10 | 6, 0, 3 | use | can be used to see if they're jumpers |
 | Over18 | str | 1 | Y | drop |  everyone would be above 18|
 | OverTime | str | 2 | No, Yes | use | good metric |
