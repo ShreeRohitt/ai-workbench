@@ -27,7 +27,7 @@ Status: `todo` · `in-progress` · `review` · `done`
 ## 03 · Attrition model — milestones
 Data: IBM HR Analytics Employee Attrition (fictional data created by IBM), 1,470 rows, 237 leavers (16%).
 
-### 03-M1 · Data, locked test split, EDA — `in-progress` (branch `03-m1-eda`)
+### 03-M1 · Data, locked test split, EDA — `done` (merged 2026-10-29)
 - Goal: a checksum-pinned dataset, a stratified test set locked before EDA, and an EDA notebook with written findings.
 - Acceptance:
   - [x] `scripts/fetch_data.sh` downloads + verifies SHA-256
@@ -36,14 +36,21 @@ Data: IBM HR Analytics Employee Attrition (fictional data created by IBM), 1,470
   - [x] Leakage audit: every column marked known-at-prediction-time / ID-or-constant / suspicious (`docs/column_audit.md`)
   - [x] Business framing written down: HR capacity-limited → precision@k (Rohit's pick) — `docs/business_framing.md` (draft: Q4 reason + ceiling line missing)
   - [x] DECISIONS entries
-  - [ ] LEARNINGS entry (Rohit)
+  - [x] LEARNINGS entry (Rohit)
   - [x] 5-question interview (2026-10-29): Q1 gap, Q2 OK, Q3 OK, Q4 not answered, Q5 weak → re-practise Q1 + Q3
 - **The bet** (fill in before M2): LightGBM beats logistic regression on PR-AUC by ___ points. Rohit (2026-10-29): **+20 points** — reason: LR can't capture combinations like overtime + Level 1. Claude: < 3 points, LR may win.
 
-### 03-M2 · Validation harness + logistic regression baseline — `todo`
-- Planned: rule baseline (OverTime=Yes & JobLevel=1; 51.7% on train, n=116) scored on the same folds as LR.
-- Planned: bootstrap CI on precision@k; decide k = 30 vs top 10% for the 294-row test set.
-- Planned experiment: train with vs without the 5 survey columns (timing unknown) and report both.
+### 03-M2 · Validation harness + baselines — `in-progress` (branch `03-m2-baseline`)
+- Goal: one fair way to score any model on train only (cross-validation), then score random, the rule, and logistic regression with it. Test set stays locked.
+- Decided: k = top 10% of whoever is being scored (≈24 per CV fold, 30 on the test set).
+- Acceptance:
+  - [ ] `attrition/metrics.py::precision_at_k` (Rohit) — tests in `tests/test_metrics.py` pass
+  - [ ] CV harness (Rohit): stratified folds on train, preprocessing inside a sklearn Pipeline, per-fold scores
+  - [ ] Baselines (Rohit): random, rule (OverTime=Yes & JobLevel=1; 51.7% on train, n=116), plain LR
+  - [ ] Experiment: LR with vs without the 5 survey columns, both reported
+  - [ ] Optional: LR + `overtime_and_level1` column (tests the bet's reasoning)
+  - [ ] One command prints PR-AUC and precision@10% as mean ± spread across folds, next to the random baseline (Claude: CLI + table)
+  - [ ] DECISIONS + LEARNINGS entries; 5-question interview
 ### 03-M3 · LightGBM, imbalance handling, operating threshold — `todo`
 ### 03-M4 · SHAP + 3 CHRO recommendations — `todo`
 ### 03-M5 · Model card, fairness checks, README — `todo`
