@@ -5,19 +5,26 @@ description = "Applied AI / data science portfolio projects with measured result
 requires-python = ">=3.11"
 dependencies = [
     "anthropic",
+    "matplotlib>=3.11.2",
     "openai",
+    "pandas>=3.1.0",
     "pydantic>=2",
     "python-dotenv",
+    "scikit-learn>=1.9.1",
 ]
 
 [dependency-groups]
-dev = ["pytest", "ruff"]
+dev = [
+    "ipykernel>=7.4.0",
+    "pytest",
+    "ruff",
+]
 
 [tool.uv]
 package = false
 
 [tool.pytest.ini_options]
-pythonpath = ["."]
+pythonpath = [".", "projects/03-attrition-model"]
 testpaths = ["shared", "projects"]
 addopts = "--import-mode=importlib"
 
@@ -27,3 +34,6 @@ target-version = "py311"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["shared", "rag", "attrition"]
