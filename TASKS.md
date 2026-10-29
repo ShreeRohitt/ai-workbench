@@ -32,13 +32,17 @@ Data: IBM HR Analytics Employee Attrition (fictional data created by IBM), 1,470
 - Acceptance:
   - [x] `scripts/fetch_data.sh` downloads + verifies SHA-256
   - [x] `attrition/split.py::make_split` (Rohit) — stratified 80/20, seeded; 4 tests pass
-  - [ ] EDA notebook on **train only**, with findings written as claims + numbers
+  - [x] EDA notebook on **train only**, with findings written as claims + numbers (deferred: comparison group + n in most findings)
   - [x] Leakage audit: every column marked known-at-prediction-time / ID-or-constant / suspicious (`docs/column_audit.md`)
-  - [ ] Business framing written down: HR capacity-limited → precision@k (Rohit's pick)
-  - [ ] DECISIONS + LEARNINGS entries; 5-question interview
+  - [x] Business framing written down: HR capacity-limited → precision@k (Rohit's pick) — `docs/business_framing.md` (draft: Q4 reason + ceiling line missing)
+  - [x] DECISIONS entries
+  - [ ] LEARNINGS entry (Rohit)
+  - [x] 5-question interview (2026-10-29): Q1 gap, Q2 OK, Q3 OK, Q4 not answered, Q5 weak → re-practise Q1 + Q3
 - **The bet** (fill in before M2): LightGBM beats logistic regression on PR-AUC by ___ points. Claude: < 3 points, LR may win.
 
 ### 03-M2 · Validation harness + logistic regression baseline — `todo`
+- Planned: rule baseline (OverTime=Yes & JobLevel=1; 51.7% on train, n=116) scored on the same folds as LR.
+- Planned: bootstrap CI on precision@k; decide k = 30 vs top 10% for the 294-row test set.
 - Planned experiment: train with vs without the 5 survey columns (timing unknown) and report both.
 ### 03-M3 · LightGBM, imbalance handling, operating threshold — `todo`
 ### 03-M4 · SHAP + 3 CHRO recommendations — `todo`
