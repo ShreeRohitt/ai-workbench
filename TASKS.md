@@ -38,7 +38,7 @@ Data: IBM HR Analytics Employee Attrition (fictional data created by IBM), 1,470
   - [x] DECISIONS entries
   - [ ] LEARNINGS entry (Rohit)
   - [x] 5-question interview (2026-10-29): Q1 gap, Q2 OK, Q3 OK, Q4 not answered, Q5 weak → re-practise Q1 + Q3
-- **The bet** (fill in before M2): LightGBM beats logistic regression on PR-AUC by ___ points. Claude: < 3 points, LR may win.
+- **The bet** (fill in before M2): LightGBM beats logistic regression on PR-AUC by ___ points. Rohit (2026-10-29): **+20 points** — reason: LR can't capture combinations like overtime + Level 1. Claude: < 3 points, LR may win.
 
 ### 03-M2 · Validation harness + logistic regression baseline — `todo`
 - Planned: rule baseline (OverTime=Yes & JobLevel=1; 51.7% on train, n=116) scored on the same folds as LR.
