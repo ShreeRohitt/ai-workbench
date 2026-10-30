@@ -44,9 +44,10 @@ Data: IBM HR Analytics Employee Attrition (fictional data created by IBM), 1,470
 - Goal: one fair way to score any model on train only (cross-validation), then score random, the rule, and logistic regression with it. Test set stays locked.
 - Decided: k = top 10% of whoever is being scored (≈24 per CV fold, 30 on the test set).
 - Acceptance:
-  - [ ] `attrition/metrics.py::precision_at_k` (Rohit) — tests in `tests/test_metrics.py` pass
-  - [ ] CV harness (Rohit): stratified folds on train, preprocessing inside a sklearn Pipeline, per-fold scores
-  - [ ] Baselines (Rohit): random, rule (OverTime=Yes & JobLevel=1; 51.7% on train, n=116), plain LR
+  - [x] `attrition/metrics.py::precision_at_k` (Rohit) — 13 tests pass; stable tie-breaking
+  - [x] CV harness `attrition/cv.py::cross_validate`: 5×5 repeated stratified folds, eval labels hidden from the model; 9 tests pass. Written with Claude's help (another session); Rohit explained `.iloc` vs `.loc` and `divmod`. **Next session first:** explain `np.zeros` as X in `.split()`, and why `.copy()`.
+  - [ ] Preprocessing inside a sklearn Pipeline (Rohit, with the LR baseline)
+  - [ ] Baselines (Rohit): random, rule (OverTime=Yes & JobLevel=1; 51.7% on train, n=116), plain LR. Measured so far (2026-10-30, exploratory run): random precision@10% = 0.147 mean over 25 folds, range 0.04–0.25 (k=24).
   - [ ] Experiment: LR with vs without the 5 survey columns, both reported
   - [ ] Optional: LR + `overtime_and_level1` column (tests the bet's reasoning)
   - [ ] One command prints PR-AUC and precision@10% as mean ± spread across folds, next to the random baseline (Claude: CLI + table)

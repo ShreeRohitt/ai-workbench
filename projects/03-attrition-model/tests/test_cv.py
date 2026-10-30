@@ -17,30 +17,36 @@ def train():
     return pd.DataFrame({"EmployeeNumber": range(500), TARGET: y})
 
 
-def perfect(fit_df, eval_df):
-    # cheats by reading the answer: should score 1.0 on everything
-    return eval_df[TARGET].to_numpy().astype(float)
+@pytest.fixture
+def perfect(train):
+    # cheats by looking up each person's true label by ID: should score 1.0 on everything
+    answers = train.set_index("EmployeeNumber")[TARGET]
+
+    def score(fit_df, eval_df):
+        return answers.loc[eval_df.EmployeeNumber].to_numpy().astype(float)
+
+    return score
 
 
-def test_shape_and_columns(train):
+def test_shape_and_columns(train, perfect):
     res = cross_validate(train, perfect, n_splits=5, n_repeats=3)
     assert len(res) == 15
     assert list(res.columns) == COLUMNS
 
 
-def test_perfect_model_scores_one(train):
+def test_perfect_model_scores_one(train, perfect):
     res = cross_validate(train, perfect)
     assert (res["pr_auc"] == 1.0).all()
     assert (res["precision_at_k"] == 1.0).all()
 
 
-def test_k_is_ten_percent_of_fold(train):
+def test_k_is_ten_percent_of_fold(train, perfect):
     res = cross_validate(train, perfect, n_splits=5)
     assert (res["n"] == 100).all()
     assert (res["k"] == 10).all()
 
 
-def test_folds_are_stratified(train):
+def test_folds_are_stratified(train, perfect):
     res = cross_validate(train, perfect, n_splits=5)
     assert res["n_leavers"].between(15, 17).all()  # 16% of 100
 
@@ -50,6 +56,15 @@ def test_no_eval_row_reaches_fitting(train):
     def spy(fit_df, eval_df):
         assert set(fit_df.EmployeeNumber).isdisjoint(eval_df.EmployeeNumber)
         assert len(fit_df) + len(eval_df) == len(train)
+        return np.zeros(len(eval_df))
+
+    cross_validate(train, spy)
+
+
+def test_model_never_sees_eval_labels(train):
+    def spy(fit_df, eval_df):
+        assert TARGET in fit_df.columns  # the model needs labels to learn from
+        assert TARGET not in eval_df.columns  # ...but must not see the answers it is graded on
         return np.zeros(len(eval_df))
 
     cross_validate(train, spy)
