@@ -49,7 +49,8 @@ def cross_validate(
     for i, (fit_idx, eval_idx) in enumerate(cv.split(np.zeros(len(train)), y)):
         repeat, fold = divmod(i, n_splits)
 
-        # Copies so a model that mutates its inputs can't leak state into later folds.
+        # Defensive: .iloc[array] already returns a new frame (and pandas 3 is Copy-on-Write),
+        # but an explicit copy makes "each fold owns its data" obvious and version-proof.
         fit_df = train.iloc[fit_idx].copy()
         eval_df = train.iloc[eval_idx].copy()
         y_eval = eval_df[TARGET].to_numpy()
