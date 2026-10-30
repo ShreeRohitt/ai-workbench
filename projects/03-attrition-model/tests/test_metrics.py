@@ -33,6 +33,19 @@ def test_ties_keep_original_order():
     assert precision_at_k([0, 1], [0.5, 0.5], k=1) == 0.0
 
 
+def test_ties_keep_original_order_many_rows():
+    # 22 rows, so numpy can't hide an unstable sort behind its small-array path.
+    # Two clear leavers on top, then 20 tied rows: stayers first, leavers last.
+    y = [0] * 10 + [1] * 10 + [1, 1]
+    s = [0.5] * 20 + [0.9, 0.9]
+    # top 12 = rows 20, 21 (leavers) + rows 0-9 (stayers) -> 2 / 12
+    assert precision_at_k(y, s, k=12) == pytest.approx(2 / 12)
+
+
+def test_returns_python_float():
+    assert type(precision_at_k([1, 0], [0.9, 0.1], k=1)) is float
+
+
 def test_accepts_pandas_series():
     y = pd.Series([1, 0, 1], index=[10, 20, 30])  # non-default index, like a CV fold
     s = pd.Series([0.9, 0.8, 0.1], index=[10, 20, 30])
