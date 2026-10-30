@@ -25,4 +25,9 @@ def overtime_level1_rule(fit_df: pd.DataFrame, eval_df: pd.DataFrame) -> np.ndar
 
     Core logic: Rohit.
     """
-    raise NotImplementedError("Rohit: implement me")
+    if "OverTime" not in eval_df.columns or "JobLevel" not in eval_df.columns:
+        raise KeyError("eval_df must have OverTime and JobLevel columns")
+    if not set(eval_df["OverTime"].unique()).issubset({"Yes", "No"}):
+        raise ValueError("OverTime must be 'Yes' or 'No'")
+
+    return np.where((eval_df["OverTime"] == "Yes") & (eval_df["JobLevel"] == 1.0), 1.0, 0.0)
