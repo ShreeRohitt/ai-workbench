@@ -35,8 +35,8 @@ Computed on the **training set** (1,176 rows). Fill in the last two columns for 
 | NumCompaniesWorked | int64 | 10 | 6, 0, 3 | use | can be used to see if they're jumpers |
 | Over18 | str | 1 | Y | drop |  everyone would be above 18|
 | OverTime | str | 2 | No, Yes | use | good metric |
-| PercentSalaryHike | int64 | 15 | 14, 12, 11 | suspicious | unknown timing |
-| PerformanceRating | int64 | 2 | 3, 4 |  suspicious| unknown timing |
+| PercentSalaryHike | int64 | 15 | 14, 12, 11 | use | set by the company at review, not an employee answer (assumed; dataset does not document timing) |
+| PerformanceRating | int64 | 2 | 3, 4 | use | set by the company at review, not an employee answer (assumed; dataset does not document timing) |
 | RelationshipSatisfaction | int64 | 4 | 3, 4, 2 | suspicious | unknown timing|
 | StandardHours | int64 | 1 | 80 | drop | 80 for all |
 | StockOptionLevel | int64 | 4 | 3, 1, 0 | use | known before |

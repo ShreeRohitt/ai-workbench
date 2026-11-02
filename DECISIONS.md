@@ -49,3 +49,8 @@
 - Chose: drop all three (audit category `drop: noise`).
 - Alternatives: keep them and let M2 feature importance show they add nothing.
 - Why: on train their Pearson correlation is ≈0 with MonthlyIncome (0.02, 0.00, 0.04) and with each other, so they don't measure pay and look like synthetic noise. Fewer noise columns means less chance of fitting noise with ~190 training leavers.
+
+## 2026-11-01 · 03: PercentSalaryHike and PerformanceRating are used in the model
+- Chose: move both from `suspicious` to `use`.
+- Alternatives: leave them out; test them with and without, like the survey columns.
+- Why: they are set by the company at review, so the exit-survey concern doesn't apply. This is an assumption: the dataset doesn't document when they were recorded. If they were recorded after someone resigned they would leak the label, so an unexpectedly high score should send us back to these columns.
