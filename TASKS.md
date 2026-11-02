@@ -48,7 +48,7 @@ Data: IBM HR Analytics Employee Attrition (fictional data created by IBM), 1,470
   - [x] CV harness `attrition/cv.py::cross_validate`: 5×5 repeated stratified folds, eval labels hidden from the model; 9 tests pass. Written with Claude's help (another session); Rohit explained `.iloc` vs `.loc` and `divmod`. **Next session first:** explain `np.zeros` as X in `.split()`, and why `.copy()`.
   - [x] Preprocessing inside a sklearn Pipeline (Rohit, with the LR baseline)
   - [ ] Baselines (Rohit): random, rule (OverTime=Yes & JobLevel=1; 51.7% on train, n=116), plain LR. Measured so far (2026-10-30, exploratory run): random precision@10% = 0.147 mean over 25 folds, range 0.04–0.25 (k=24).
-  - [ ] Experiment: LR with vs without the 5 survey columns, both reported
+  - [x] Experiment: LR with vs without the 5 survey columns, both reported (`attrition.report`; paired: `notebooks/02_paired_comparison.py`)
   - [ ] Optional: LR + `overtime_and_level1` column (tests the bet's reasoning)
   - [x] One command prints PR-AUC and precision@10% as mean ± spread across folds, next to the random baseline (Claude: CLI + table)
   - [ ] DECISIONS + LEARNINGS entries; 5-question interview
