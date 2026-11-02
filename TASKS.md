@@ -50,7 +50,7 @@ Data: IBM HR Analytics Employee Attrition (fictional data created by IBM), 1,470
   - [ ] Baselines (Rohit): random, rule (OverTime=Yes & JobLevel=1; 51.7% on train, n=116), plain LR. Measured so far (2026-10-30, exploratory run): random precision@10% = 0.147 mean over 25 folds, range 0.04–0.25 (k=24).
   - [ ] Experiment: LR with vs without the 5 survey columns, both reported
   - [ ] Optional: LR + `overtime_and_level1` column (tests the bet's reasoning)
-  - [ ] One command prints PR-AUC and precision@10% as mean ± spread across folds, next to the random baseline (Claude: CLI + table)
+  - [x] One command prints PR-AUC and precision@10% as mean ± spread across folds, next to the random baseline (Claude: CLI + table)
   - [ ] DECISIONS + LEARNINGS entries; 5-question interview
 ### 03-M3 · LightGBM, imbalance handling, operating threshold — `todo`
 ### 03-M4 · SHAP + 3 CHRO recommendations — `todo`
