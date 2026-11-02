@@ -54,3 +54,8 @@
 - Chose: move both from `suspicious` to `use`.
 - Alternatives: leave them out; test them with and without, like the survey columns.
 - Why: they are set by the company at review, so the exit-survey concern doesn't apply. This is an assumption: the dataset doesn't document when they were recorded. If they were recorded after someone resigned they would leak the label, so an unexpectedly high score should send us back to these columns.
+
+## 2026-11-02 · 03: the baseline to beat is logistic regression without the survey columns
+- Chose: plain logistic regression (precision@10% 0.603 ± 0.091 over 25 folds) is the model we'd deploy and the one M3 must beat.
+- Alternatives: logistic regression + 5 survey columns, which scores higher (0.717 ± 0.071); the overtime + Level 1 rule (0.488 ± 0.089).
+- Why (Rohit): HR makes a fixed number of calls, so precision at the top decides it. The survey's timing is unknown, so its gain can't be trusted. If the answers were given after someone decided to leave, the gain is leakage and disappears in production. Evidence either way: stayers have survey answers too (0 missing in either group), so it isn't an exit-only survey. Leavers' averages are 0.13–0.33 lower on a 1–4 scale, which fits both "real signal" and "leak". Both rows stay in the results table. Open: whether either gain over the rule beats fold-to-fold noise (paired comparison not done yet).
