@@ -10,7 +10,7 @@ import pandas as pd
 
 from attrition.baselines import logistic_model, overtime_level1_rule, random_model
 from attrition.cv import ScoreFn, cross_validate
-from attrition.features import CATEGORICAL, NUMERIC, SURVEY
+from attrition.features import CATEGORICAL, NUMERIC, SURVEY, add_overtime_and_level1
 from attrition.load import TARGET, load_raw
 from attrition.split import make_split
 
@@ -24,6 +24,7 @@ def baseline_models() -> dict[str, ScoreFn]:
         "rule: overtime + level 1": overtime_level1_rule,
         "logistic regression": logistic_model(NUMERIC, CATEGORICAL),
         "logistic regression + survey": logistic_model(NUMERIC + SURVEY, CATEGORICAL),
+        "LR + overtime_and_level1": logistic_model(NUMERIC + ["overtime_and_level1"], CATEGORICAL),
     }
 
 
@@ -63,6 +64,8 @@ def format_table(summary: pd.DataFrame) -> str:
 
 def main() -> None:
     train, _ = make_split(load_raw())
+    # Row-by-row, learns nothing from other rows, so it is safe to add before the CV split.
+    train = add_overtime_and_level1(train)
     summary = compare(train, baseline_models())
     print(f"train rows: {len(train)}, leavers: {train[TARGET].mean():.1%}")
     print(f"folds per model: {summary['folds'].iloc[0]}; mean ± std (min to max) across folds\n")

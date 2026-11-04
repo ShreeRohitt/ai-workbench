@@ -47,9 +47,9 @@ Data: IBM HR Analytics Employee Attrition (fictional data created by IBM), 1,470
   - [x] `attrition/metrics.py::precision_at_k` (Rohit) — 13 tests pass; stable tie-breaking
   - [x] CV harness `attrition/cv.py::cross_validate`: 5×5 repeated stratified folds, eval labels hidden from the model; 9 tests pass. Written with Claude's help (another session); Rohit explained `.iloc` vs `.loc` and `divmod`. **Next session first:** explain `np.zeros` as X in `.split()`, and why `.copy()`.
   - [x] Preprocessing inside a sklearn Pipeline (Rohit, with the LR baseline)
-  - [ ] Baselines (Rohit): random, rule (OverTime=Yes & JobLevel=1; 51.7% on train, n=116), plain LR. Measured so far (2026-10-30, exploratory run): random precision@10% = 0.147 mean over 25 folds, range 0.04–0.25 (k=24).
+  - [x] Baselines (Rohit): random, rule (OverTime=Yes & JobLevel=1; 51.7% on train, n=116), plain LR. Measured so far (2026-10-30, exploratory run): random precision@10% = 0.147 mean over 25 folds, range 0.04–0.25 (k=24).
   - [x] Experiment: LR with vs without the 5 survey columns, both reported (`attrition.report`; paired: `notebooks/02_paired_comparison.py`)
-  - [ ] Optional: LR + `overtime_and_level1` column (tests the bet's reasoning)
+  - [x] Optional: LR + `overtime_and_level1` column (tests the bet's reasoning). Predictions (2026-11-04), PR-AUC change vs plain LR (0.533): Rohit **+3 points** (LR already gets close on that group: 45.9% predicted vs 51.7% actual); Claude **< 1 point** (JobRole, income, stock level already describe that group). **Result (2026-11-04):** PR-AUC 0.533 → 0.541 (+0.8 pts; wins 16/25 folds, 9 losses), precision@10% 0.603 → 0.605 (8 wins / 9 ties / 8 losses). Claude's call won; gain is within fold noise. Plain LR stays the baseline.
   - [x] One command prints PR-AUC and precision@10% as mean ± spread across folds, next to the random baseline (Claude: CLI + table)
   - [ ] DECISIONS + LEARNINGS entries; 5-question interview
 ### 03-M3 · LightGBM, imbalance handling, operating threshold — `todo`

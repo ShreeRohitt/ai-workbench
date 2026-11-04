@@ -59,3 +59,8 @@
 - Chose: plain logistic regression (precision@10% 0.603 ± 0.091 over 25 folds) is the model we'd deploy and the one M3 must beat.
 - Alternatives: logistic regression + 5 survey columns, which scores higher (0.717 ± 0.071); the overtime + Level 1 rule (0.488 ± 0.089).
 - Why (Rohit): HR makes a fixed number of calls, so precision at the top decides it. The survey's timing is unknown, so its gain can't be trusted. If the answers were given after someone decided to leave, the gain is leakage and disappears in production. Evidence either way: stayers have survey answers too (0 missing in either group), so it isn't an exit-only survey. Leavers' averages are 0.13–0.33 lower on a 1–4 scale, which fits both "real signal" and "leak". Both rows stay in the results table. Paired comparison on the same folds (`notebooks/02_paired_comparison.py`): LR beats the rule on 20 of 25 folds (3 ties, 2 losses); + survey beats LR on 22 (2 ties, 1 loss). Neither gain is fold noise, but that can't rule out a survey leak.
+
+## 2026-11-04 · 03: no hand-made overtime × Level 1 column in the baseline
+- Chose: keep plain logistic regression as the baseline; the `LR + overtime_and_level1` row stays in the results table as a recorded experiment.
+- Alternatives: add the column to the baseline.
+- Why: on the same 25 folds it moved PR-AUC 0.533 → 0.541 (16 wins, 9 losses) and precision@10% 0.603 → 0.605 (8 wins, 9 ties, 8 losses), both within fold noise. The survey columns, by contrast, won 22 of 25. LR already gets close on that group without the column (45.9% predicted vs 51.7% actual on train). This weakens the stated reason for the "LightGBM +20 PR-AUC" bet but doesn't settle it: trees may still find other combinations or curved effects. M3 settles it.
