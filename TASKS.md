@@ -52,6 +52,17 @@ Data: IBM HR Analytics Employee Attrition (fictional data created by IBM), 1,470
   - [x] Optional: LR + `overtime_and_level1` column (tests the bet's reasoning). Predictions (2026-11-04), PR-AUC change vs plain LR (0.533): Rohit **+3 points** (LR already gets close on that group: 45.9% predicted vs 51.7% actual); Claude **< 1 point** (JobRole, income, stock level already describe that group). **Result (2026-11-04):** PR-AUC 0.533 → 0.541 (+0.8 pts; wins 16/25 folds, 9 losses), precision@10% 0.603 → 0.605 (8 wins / 9 ties / 8 losses). Claude's call won; gain is within fold noise. Plain LR stays the baseline.
   - [x] One command prints PR-AUC and precision@10% as mean ± spread across folds, next to the random baseline (Claude: CLI + table)
   - [x] DECISIONS + LEARNINGS entries; 5-question interview (2026-11-05): Q1 metrics partial (no sizes; "25 folds = confident"), Q2 CV design partial (thought CV prevents overfitting), Q3 failure modes weak-partial (no "how to tell"; missed intervention effect), Q4 scaling partial (1 of ~5 issues), Q5 biggest weakness OK → re-practise Q2 + Q3
-### 03-M3 · LightGBM, imbalance handling, operating threshold — `todo`
+### 03-M3 · LightGBM, imbalance handling, operating threshold — `in-progress` (branch `03-m3-lightgbm`)
+- Goal: does a tree model beat LR on the same folds (settles the bet), and how many people should HR call per month, by measured numbers. Test set stays locked (decide at the end of M3 whether to score it then or in M5).
+- Baseline to beat: LR precision@10% 0.603 ± 0.091, PR-AUC 0.533 ± 0.069.
+- Acceptance:
+  - [ ] Step 1: tree + boosting explained on our data (Claude)
+  - [ ] `baselines.py::lightgbm_model` (Rohit) with small-data defaults fixed before looking at scores; row in `attrition.report`
+  - [ ] Paired LightGBM vs LR comparison on PR-AUC and precision@10% → bet settled with numbers
+  - [ ] Class-weight experiment for LR and LightGBM (Rohit's prediction written first)
+  - [ ] Any tuning only inside each fold's fit rows (Rohit), with a test that eval rows never reach tuning
+  - [ ] Sensitivity row: LR without PercentSalaryHike and PerformanceRating (from M2 interview Q5)
+  - [ ] Precision and recall at k = 10…60 per month: table + plot (Claude), interpretation (Rohit)
+  - [ ] Tests pass, lint clean; DECISIONS, LEARNINGS (Rohit), 5-question interview
 ### 03-M4 · SHAP + 3 CHRO recommendations — `todo`
 ### 03-M5 · Model card, fairness checks, README — `todo`
