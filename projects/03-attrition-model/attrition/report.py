@@ -7,14 +7,26 @@ The test set is never loaded into a model here: only make_split's train half is 
 from __future__ import annotations
 
 import pandas as pd
+from sklearn.model_selection import ParameterGrid
 
-from attrition.baselines import logistic_model, overtime_level1_rule, random_model
+from attrition.baselines import (
+    lightgbm_model,
+    logistic_model,
+    overtime_level1_rule,
+    random_model,
+    tuned_lightgbm_model,
+)
 from attrition.cv import ScoreFn, cross_validate
 from attrition.features import CATEGORICAL, NUMERIC, SURVEY, add_overtime_and_level1
 from attrition.load import TARGET, load_raw
 from attrition.split import make_split
 
 METRICS = {"pr_auc": "PR-AUC", "precision_at_k": "precision@10%"}
+
+# Nested-CV search space (TASKS.md 03-M3, fixed 2026-11-06 before the tuned run). 12 settings.
+TUNING_GRID = list(
+    ParameterGrid({"num_leaves": [4, 6], "min_child_samples": [40, 80, 100], "reg_lambda": [5, 20]})
+)
 
 
 def baseline_models() -> dict[str, ScoreFn]:
@@ -25,6 +37,8 @@ def baseline_models() -> dict[str, ScoreFn]:
         "logistic regression": logistic_model(NUMERIC, CATEGORICAL),
         "logistic regression + survey": logistic_model(NUMERIC + SURVEY, CATEGORICAL),
         "LR + overtime_and_level1": logistic_model(NUMERIC + ["overtime_and_level1"], CATEGORICAL),
+        "lightgbm": lightgbm_model(NUMERIC, CATEGORICAL),
+        "lightgbm, nested-CV tuned": tuned_lightgbm_model(NUMERIC, CATEGORICAL, TUNING_GRID),
     }
 
 
