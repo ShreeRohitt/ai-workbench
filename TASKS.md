@@ -56,11 +56,25 @@ Data: IBM HR Analytics Employee Attrition (fictional data created by IBM), 1,470
 - Goal: does a tree model beat LR on the same folds (settles the bet), and how many people should HR call per month, by measured numbers. Test set stays locked (decide at the end of M3 whether to score it then or in M5).
 - Baseline to beat: LR precision@10% 0.603 ± 0.091, PR-AUC 0.533 ± 0.069.
 - Acceptance:
-  - [ ] Step 1: tree + boosting explained on our data (Claude)
-  - [ ] `baselines.py::lightgbm_model` (Rohit) with small-data defaults fixed before looking at scores; row in `attrition.report`
+  - [x] Step 1: tree + boosting explained on our data (Claude). Check Qs 2026-11-05: right direction on both, but no numbers and no "how would you tell"
+  - [x] `baselines.py::lightgbm_model` (Rohit) with small-data defaults fixed before looking at scores; row in `attrition.report` — done 2026-11-06: PR-AUC 0.554 ± 0.037, precision@10% 0.607 ± 0.068 (25 folds)
+    - Defaults, fixed 2026-11-05 before any LightGBM score. Categoricals one-hot encoded, same inputs as LR (NUMERIC + CATEGORICAL), fixed rounds, no early stopping.
+
+      | param | Rohit (used) | Claude (for comparison) | Rohit's reason |
+      |---|---|---|---|
+      | num_leaves | 6 | 8 (max_depth 3) | small data, keep trees simple |
+      | min_child_samples | 40 | 30 | each group needs ~6 leavers to be trustworthy |
+      | n_estimators × learning_rate | 200 × 0.05 | 300 × 0.03 | many small nudges, not too many rounds |
+      | subsample (freq 1) / colsample_bytree | 0.8 / 0.8 | 0.8 / 0.8 | randomness stops memorising |
+      | reg_lambda | 5 | 1 | brake on small groups |
+      | random_state / verbose | 0 / -1 | 0 / -1 | |
   - [ ] Paired LightGBM vs LR comparison on PR-AUC and precision@10% → bet settled with numbers
+    - Measured 2026-11-06 (`notebooks/03_lightgbm_vs_lr.py`): PR-AUC +0.020 (18 wins / 7 losses), precision@10% +0.003 (13 / 5 ties / 7). Fit-vs-eval PR-AUC gap: LR +0.056, LightGBM +0.258. Conclusion: Rohit, pending.
+    - Exploratory, chosen after seeing CV scores (not a model choice; LGBM_DEFAULTS stays 40): min_child_samples=100 → fit 0.812→0.744, eval 0.554→0.554, gap +0.258→+0.190; 100 vs 40 PR-AUC +0.000 (11 wins / 14 losses). Rohit predicted eval 0.6, fit 0.7, gap 0.1.
   - [ ] Class-weight experiment for LR and LightGBM (Rohit's prediction written first)
-  - [ ] Any tuning only inside each fold's fit rows (Rohit), with a test that eval rows never reach tuning
+  - [x] Any tuning only inside each fold's fit rows (Rohit), with a test that eval rows never reach tuning
+    - Predictions (2026-11-06, before the run), nested-CV PR-AUC vs untuned 0.554: Rohit **+0.10 or more**; Claude **±0.01**.
+    - **Result (2026-11-06, 12-setting grid, 3 inner folds):** PR-AUC 0.556 ± 0.036, precision@10% 0.620 ± 0.056. vs untuned LightGBM: PR-AUC +0.002 (12 wins / 3 ties / 10 losses). vs LR: PR-AUC +0.022 (19 / 6), precision@10% +0.017 (10 / 9 ties / 6). num_leaves=4 chosen in 21/25 folds; 7 different settings won somewhere. Spy test confirms eval rows never reach tuning.
   - [ ] Sensitivity row: LR without PercentSalaryHike and PerformanceRating (from M2 interview Q5)
   - [ ] Precision and recall at k = 10…60 per month: table + plot (Claude), interpretation (Rohit)
   - [ ] Tests pass, lint clean; DECISIONS, LEARNINGS (Rohit), 5-question interview
