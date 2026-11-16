@@ -55,11 +55,14 @@ def overtime_level1_rule(fit_df: pd.DataFrame, eval_df: pd.DataFrame) -> np.ndar
     return np.where((eval_df["OverTime"] == "Yes") & (eval_df["JobLevel"] == 1.0), 1.0, 0.0)
 
 
-def logistic_model(numeric: list[str], categorical: list[str]) -> ScoreFn:
+def logistic_model(
+    numeric: list[str], categorical: list[str], class_weight: str | None = None
+) -> ScoreFn:
     """Logistic regression on the named columns. Core logic: Rohit.
 
     Numeric columns are scaled, categorical columns are one-hot encoded, and both steps
     are fitted on fit_df only. Returns P(leaves) for each row of eval_df.
+    class_weight is passed to LogisticRegression ("balanced" or None).
     """
 
     def score(fit_df: pd.DataFrame, eval_df: pd.DataFrame) -> np.ndarray:
@@ -72,7 +75,7 @@ def logistic_model(numeric: list[str], categorical: list[str]) -> ScoreFn:
         model = Pipeline(
             [
                 ("preprocess", preprocess),
-                ("clf", LogisticRegression(max_iter=1000)),
+                ("clf", LogisticRegression(max_iter=1000, class_weight=class_weight)),
             ]
         )
         features = list(numeric) + list(categorical)
@@ -128,8 +131,11 @@ def tuned_lightgbm_model(
     grid: list[dict],
     inner_splits: int = 3,
     chosen: list[dict] | None = None,
+    class_weight: str | None = None,
 ) -> ScoreFn:
     """Picks settings from `grid` by inner CV on fit_df only, refits, scores eval_df.
+
+    class_weight ("balanced" or None) is used for every inner fit and for the final refit.
 
     If `chosen` is given, the winning setting of every call is appended to it (one per fold).
     Core logic: Rohit.
@@ -149,7 +155,7 @@ def tuned_lightgbm_model(
                 train_df = fit_df.iloc[train_idx]
                 val_df = fit_df.iloc[val_idx]
 
-                model = lightgbm_model(numeric, categorical, **params)
+                model = lightgbm_model(numeric, categorical, class_weight=class_weight, **params)
                 val_scores = model(train_df, val_df.drop(columns=[TARGET]))
                 inner_scores.append(average_precision_score(val_df[TARGET], val_scores))
 
@@ -161,7 +167,7 @@ def tuned_lightgbm_model(
         if chosen is not None:
             chosen.append(best_params)
         # Refit on the entire fit_df with the best parameters
-        final_model = lightgbm_model(numeric, categorical, **best_params)
+        final_model = lightgbm_model(numeric, categorical, class_weight=class_weight, **best_params)
         return final_model(fit_df, eval_df)
 
     return score

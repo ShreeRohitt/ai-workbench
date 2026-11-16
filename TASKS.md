@@ -68,10 +68,12 @@ Data: IBM HR Analytics Employee Attrition (fictional data created by IBM), 1,470
       | subsample (freq 1) / colsample_bytree | 0.8 / 0.8 | 0.8 / 0.8 | randomness stops memorising |
       | reg_lambda | 5 | 1 | brake on small groups |
       | random_state / verbose | 0 / -1 | 0 / -1 | |
-  - [ ] Paired LightGBM vs LR comparison on PR-AUC and precision@10% → bet settled with numbers
-    - Measured 2026-11-06 (`notebooks/03_lightgbm_vs_lr.py`): PR-AUC +0.020 (18 wins / 7 losses), precision@10% +0.003 (13 / 5 ties / 7). Fit-vs-eval PR-AUC gap: LR +0.056, LightGBM +0.258. Conclusion: Rohit, pending.
+  - [x] Paired LightGBM vs LR comparison on PR-AUC and precision@10% → bet settled with numbers
+    - Measured 2026-11-06 (`notebooks/03_lightgbm_vs_lr.py`): PR-AUC +0.020 (18 wins / 7 losses), precision@10% +0.003 (13 / 5 ties / 7). Fit-vs-eval PR-AUC gap: LR +0.056, LightGBM +0.258. Conclusion: notebook last cell (bet wrong: +0.020 vs +0.20 bet; limit is information, not model).
     - Exploratory, chosen after seeing CV scores (not a model choice; LGBM_DEFAULTS stays 40): min_child_samples=100 → fit 0.812→0.744, eval 0.554→0.554, gap +0.258→+0.190; 100 vs 40 PR-AUC +0.000 (11 wins / 14 losses). Rohit predicted eval 0.6, fit 0.7, gap 0.1.
-  - [ ] Class-weight experiment for LR and LightGBM (Rohit's prediction written first)
+  - [x] Class-weight experiment for LR and LightGBM (Rohit's prediction written first)
+    - Predictions (2026-11-09, before any run), PR-AUC change from class_weight="balanced": Rohit **LR +0.001, LightGBM +0.020** ("mistakes on leavers now cost more"); Claude **LR ±0.01, LightGBM −0.02 to +0.01** (ranking metrics ignore the probability shift; 5× weight on 190 leavers may add noise for trees).
+    - **Result (2026-11-09, `notebooks/03_lightgbm_vs_lr.py`):** LR PR-AUC −0.024 (2 wins / 23 losses), precision@10% −0.030 (3 / 7 ties / 15). LightGBM PR-AUC −0.007 (9 / 16), precision@10% +0.003 (9 / 8 / 8). Balanced weights cut effective rows 1,176 → 637. Both LR predictions wrong; Claude's LightGBM range held. Decision: no class weights.
   - [x] Any tuning only inside each fold's fit rows (Rohit), with a test that eval rows never reach tuning
     - Predictions (2026-11-06, before the run), nested-CV PR-AUC vs untuned 0.554: Rohit **+0.10 or more**; Claude **±0.01**.
     - **Result (2026-11-06, 12-setting grid, 3 inner folds):** PR-AUC 0.556 ± 0.036, precision@10% 0.620 ± 0.056. vs untuned LightGBM: PR-AUC +0.002 (12 wins / 3 ties / 10 losses). vs LR: PR-AUC +0.022 (19 / 6), precision@10% +0.017 (10 / 9 ties / 6). num_leaves=4 chosen in 21/25 folds; 7 different settings won somewhere. Spy test confirms eval rows never reach tuning.

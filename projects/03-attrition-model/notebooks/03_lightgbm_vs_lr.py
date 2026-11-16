@@ -86,4 +86,33 @@ print("settings chosen across the 25 folds:")
 for setting, n in Counter(tuple(sorted(c.items())) for c in chosen).most_common():
     print(f"  {n:2d}x {dict(setting)}")
 
-# %% Conclusion (Rohit): was the +20 bet right? What do the fit/eval gaps say about the settings?
+# %% Class weights: balanced vs plain, same 25 folds (predictions in TASKS.md, written first)
+lr_bal = cross_validate(train, logistic_model(NUMERIC, CATEGORICAL, "balanced"))
+lgbm_bal = cross_validate(train, lightgbm_model(NUMERIC, CATEGORICAL, "balanced"))
+for metric in ("pr_auc", "precision_at_k"):
+    compare(lr_bal, lr, metric, "LR balanced", "LR")
+    compare(lgbm_bal, lgbm, metric, "LightGBM balanced", "LightGBM")
+
+# Effective sample size under balanced weights: (sum w)^2 / sum w^2
+w = np.where(
+    train[TARGET] == 1,
+    len(train) / (2 * train[TARGET].sum()),
+    len(train) / (2 * (1 - train[TARGET]).sum()),
+)
+print(f"rows {len(train)}, effective rows with balanced weights {w.sum() ** 2 / (w**2).sum():.0f}")
+
+# %% Conclusion (Rohit's reasoning; written up by Claude)
+# 1. The bet was wrong. Rohit bet LightGBM +0.20 PR-AUC over LR; measured +0.020 (18 wins,
+#    7 losses of 25 folds), tuned +0.022 (19 / 6). A tenth of the bet: on ~150 leavers per fold
+#    most interactions trees could find are noise, and LR already covers the main effects.
+# 2. HR would not notice. Tuned LightGBM vs LR on precision@10%: +0.017 (10 wins, 9 ties,
+#    6 losses) = 0.4 extra real leavers per 24 calls. Fold-to-fold swing is -0.167 to +0.167
+#    (+-4 people of 24), ten times the gain.
+# 3. The limit is the information, not the model. min_child_samples 40 -> 100 cut fit PR-AUC
+#    0.812 -> 0.744 but eval stayed 0.554: the gap was memorised noise. LR has almost no gap
+#    (+0.056) and similar eval. The one big gain so far came from new columns (survey, +0.101
+#    in M2), not from a stronger model; more rows may also help but is unmeasured.
+# 4. Tuning is not worth it here. Nested CV gained +0.002 over the defaults (12 wins, 3 ties,
+#    10 losses); 7 of 12 settings won some fold, so the settings are near-equal and the pick is
+#    inner-fold noise. Only signal: 4-leaf trees won 21 of 25 folds.
+# Caveat: the 25 folds reuse the same 1,176 people, so win counts overstate certainty.

@@ -35,9 +35,11 @@ def baseline_models() -> dict[str, ScoreFn]:
         "random": random_model(),
         "rule: overtime + level 1": overtime_level1_rule,
         "logistic regression": logistic_model(NUMERIC, CATEGORICAL),
+        "logistic regression, balanced": logistic_model(NUMERIC, CATEGORICAL, "balanced"),
         "logistic regression + survey": logistic_model(NUMERIC + SURVEY, CATEGORICAL),
         "LR + overtime_and_level1": logistic_model(NUMERIC + ["overtime_and_level1"], CATEGORICAL),
         "lightgbm": lightgbm_model(NUMERIC, CATEGORICAL),
+        "lightgbm, balanced": lightgbm_model(NUMERIC, CATEGORICAL, "balanced"),
         "lightgbm, nested-CV tuned": tuned_lightgbm_model(NUMERIC, CATEGORICAL, TUNING_GRID),
     }
 
