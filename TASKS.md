@@ -82,6 +82,7 @@ Data: IBM HR Analytics Employee Attrition (fictional data created by IBM), 1,470
     - Predictions (2026-11-20, before the run), PR-AUC change vs plain LR (0.533): Rohit **−0.01** ("no signal on their own"); Claude **±0.005**.
     - **Result (2026-11-20, `notebooks/02_paired_comparison.py`):** PR-AUC 0.533 → 0.536, diff +0.003 (std of per-fold diff 0.008; 17 wins / 8 losses). precision@10% 0.603 → 0.610, diff +0.007 (std 0.029; 8 / 13 ties / 4). Dropping them costs nothing; Rohit's direction was wrong, Claude's range held. NUMERIC unchanged so earlier rows stay comparable; if review timing turns out to be after the prediction date, drop both at no measured cost.
   - [ ] Precision and recall at k = 10…60 per month: table + plot (Claude), interpretation (Rohit)
+    - Table + plot done 2026-11-20 (`uv run python -m attrition.capacity`, `docs/figures/capacity_curve.png`; plain LR, 25 folds of ~235 people, ~38 leavers each). precision@k 0.680 → 0.409 and recall@k 0.179 → 0.646 from k=10 to 60. Interpretation (Rohit): pending.
   - [ ] Tests pass, lint clean; DECISIONS, LEARNINGS (Rohit), 5-question interview
 ### 03-M4 · SHAP + 3 CHRO recommendations — `todo`
 ### 03-M5 · Model card, fairness checks, README — `todo`
