@@ -23,6 +23,9 @@ from attrition.split import make_split
 
 METRICS = {"pr_auc": "PR-AUC", "precision_at_k": "precision@10%"}
 
+# Sensitivity check (M2 interview Q5): both are set at review time, so their timing is unclear.
+NO_HIKE_RATING = [c for c in NUMERIC if c not in ("PercentSalaryHike", "PerformanceRating")]
+
 # Nested-CV search space (TASKS.md 03-M3, fixed 2026-11-06 before the tuned run). 12 settings.
 TUNING_GRID = list(
     ParameterGrid({"num_leaves": [4, 6], "min_child_samples": [40, 80, 100], "reg_lambda": [5, 20]})
@@ -37,6 +40,7 @@ def baseline_models() -> dict[str, ScoreFn]:
         "logistic regression": logistic_model(NUMERIC, CATEGORICAL),
         "logistic regression, balanced": logistic_model(NUMERIC, CATEGORICAL, "balanced"),
         "logistic regression + survey": logistic_model(NUMERIC + SURVEY, CATEGORICAL),
+        "LR without hike + rating": logistic_model(NO_HIKE_RATING, CATEGORICAL),
         "LR + overtime_and_level1": logistic_model(NUMERIC + ["overtime_and_level1"], CATEGORICAL),
         "lightgbm": lightgbm_model(NUMERIC, CATEGORICAL),
         "lightgbm, balanced": lightgbm_model(NUMERIC, CATEGORICAL, "balanced"),

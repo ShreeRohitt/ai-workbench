@@ -77,7 +77,10 @@ Data: IBM HR Analytics Employee Attrition (fictional data created by IBM), 1,470
   - [x] Any tuning only inside each fold's fit rows (Rohit), with a test that eval rows never reach tuning
     - Predictions (2026-11-06, before the run), nested-CV PR-AUC vs untuned 0.554: Rohit **+0.10 or more**; Claude **±0.01**.
     - **Result (2026-11-06, 12-setting grid, 3 inner folds):** PR-AUC 0.556 ± 0.036, precision@10% 0.620 ± 0.056. vs untuned LightGBM: PR-AUC +0.002 (12 wins / 3 ties / 10 losses). vs LR: PR-AUC +0.022 (19 / 6), precision@10% +0.017 (10 / 9 ties / 6). num_leaves=4 chosen in 21/25 folds; 7 different settings won somewhere. Spy test confirms eval rows never reach tuning.
-  - [ ] Sensitivity row: LR without PercentSalaryHike and PerformanceRating (from M2 interview Q5)
+  - [x] Sensitivity row: LR without PercentSalaryHike and PerformanceRating (from M2 interview Q5). Code written by Claude at Rohit's request.
+    - Train-only check (2026-11-20, `notebooks/pandas_practice.py`): PerformanceRating 16.0% (n=991) vs 16.8% (n=185); PercentSalaryHike quartiles 17.8 / 13.9 / 17.5 / 15.4% (n 247–326), no trend. Rating 4 ⇔ hike ≥ 20% exactly (991/0, 0/185).
+    - Predictions (2026-11-20, before the run), PR-AUC change vs plain LR (0.533): Rohit **−0.01** ("no signal on their own"); Claude **±0.005**.
+    - **Result (2026-11-20, `notebooks/02_paired_comparison.py`):** PR-AUC 0.533 → 0.536, diff +0.003 (std of per-fold diff 0.008; 17 wins / 8 losses). precision@10% 0.603 → 0.610, diff +0.007 (std 0.029; 8 / 13 ties / 4). Dropping them costs nothing; Rohit's direction was wrong, Claude's range held. NUMERIC unchanged so earlier rows stay comparable; if review timing turns out to be after the prediction date, drop both at no measured cost.
   - [ ] Precision and recall at k = 10…60 per month: table + plot (Claude), interpretation (Rohit)
   - [ ] Tests pass, lint clean; DECISIONS, LEARNINGS (Rohit), 5-question interview
 ### 03-M4 · SHAP + 3 CHRO recommendations — `todo`
