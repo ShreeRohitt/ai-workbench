@@ -1,12 +1,18 @@
 """Why does the model score someone high? Per-column contributions (SHAP for a linear model).
 
-Core logic: Rohit.
+Core logic: written by Claude at Rohit's request (2026-11-21), walked through in session.
 """
 
 from __future__ import annotations
 
+import numpy as np
 import pandas as pd
 from sklearn.pipeline import Pipeline
+
+
+def _dense(matrix) -> np.ndarray:
+    """ColumnTransformer may return a sparse matrix; contributions need a plain array."""
+    return np.asarray(matrix.toarray() if hasattr(matrix, "toarray") else matrix, dtype=float)
 
 
 def lr_contributions(
@@ -27,4 +33,26 @@ def lr_contributions(
                      model was given them (numeric first, then categorical)
     So that:  base + contributions.sum(axis=1) == model.decision_function(X)
     """
-    raise NotImplementedError("Rohit: Step 3 of 03-M4")
+    pre = model.named_steps["preprocess"]
+    clf = model.named_steps["clf"]
+
+    z = _dense(pre.transform(X))  # rows x transformed columns
+    average = _dense(pre.transform(background)).mean(axis=0)
+    coef = clf.coef_[0]
+
+    per_column = coef * (z - average)  # broadcasting: every row, every transformed column
+    base = float(clf.intercept_[0] + coef @ average)
+
+    # Sum one-hot columns back to their original column: cat__JobRole_Sales Executive -> JobRole
+    names = pre.get_feature_names_out()
+    originals = [col for _, _, cols in pre.transformers_ if _ != "remainder" for col in cols]
+    contributions = pd.DataFrame(
+        {
+            col: per_column[
+                :, [n == f"num__{col}" or n.startswith(f"cat__{col}_") for n in names]
+            ].sum(axis=1)
+            for col in originals
+        },
+        index=X.index,
+    )
+    return base, contributions
