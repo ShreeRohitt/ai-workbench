@@ -84,3 +84,8 @@
 - Chose: report precision and recall for k = 10…60 per ~235 employees (`attrition.capacity`) instead of a single k. k = 30 stays the default for headline numbers (2026-10-28).
 - Alternatives: fix k = 30 only; pick k where precision drops below a threshold.
 - Why: extra leavers per extra 10 calls fall 5.6 → 4.6 → 3.4 → 2.7 → 1.5; calls 51–60 find no more than random (1.6 per 10), so going past 50 calls isn't worth it. Between 30 and 50 the calls are still 1.7–2× random, so the stopping point depends on cost per call vs value of retaining one person, which is HR's call. At k = 30: 17.0 of ~38 leavers, precision 0.565 ± 0.083, recall 0.446.
+
+## 2026-11-21 · 03: the locked test set is scored once, at the start of M5
+- Chose (Rohit): score plain LR on the test set at the start of M5, after M4 SHAP, together with the fairness checks.
+- Alternatives: score it now, at the end of M3.
+- Why: if SHAP in M4 shows the model leaning on something suspicious and we change the features, a test score taken now would be used up and a second look isn't a fair test. Scoring after M4 means the test set is used once, on the final model.

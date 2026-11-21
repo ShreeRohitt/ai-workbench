@@ -53,7 +53,7 @@ Data: IBM HR Analytics Employee Attrition (fictional data created by IBM), 1,470
   - [x] One command prints PR-AUC and precision@10% as mean ± spread across folds, next to the random baseline (Claude: CLI + table)
   - [x] DECISIONS + LEARNINGS entries; 5-question interview (2026-11-05): Q1 metrics partial (no sizes; "25 folds = confident"), Q2 CV design partial (thought CV prevents overfitting), Q3 failure modes weak-partial (no "how to tell"; missed intervention effect), Q4 scaling partial (1 of ~5 issues), Q5 biggest weakness OK → re-practise Q2 + Q3
 ### 03-M3 · LightGBM, imbalance handling, operating threshold — `in-progress` (branch `03-m3-lightgbm`)
-- Goal: does a tree model beat LR on the same folds (settles the bet), and how many people should HR call per month, by measured numbers. Test set stays locked (decide at the end of M3 whether to score it then or in M5).
+- Goal: does a tree model beat LR on the same folds (settles the bet), and how many people should HR call per month, by measured numbers. Test set stays locked. Decided 2026-11-21 (Rohit): score it once at the start of M5, after M4 SHAP.
 - Baseline to beat: LR precision@10% 0.603 ± 0.091, PR-AUC 0.533 ± 0.069.
 - Acceptance:
   - [x] Step 1: tree + boosting explained on our data (Claude). Check Qs 2026-11-05: right direction on both, but no numbers and no "how would you tell"
@@ -89,3 +89,4 @@ Data: IBM HR Analytics Employee Attrition (fictional data created by IBM), 1,470
   - [ ] Tests pass, lint clean; DECISIONS, LEARNINGS (Rohit), 5-question interview
 ### 03-M4 · SHAP + 3 CHRO recommendations — `todo`
 ### 03-M5 · Model card, fairness checks, README — `todo`
+- First step: score plain LR on the locked test set, once (k = 10% = 30 of 294 and the capacity table).
