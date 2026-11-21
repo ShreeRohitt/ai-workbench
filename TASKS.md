@@ -90,3 +90,4 @@ Data: IBM HR Analytics Employee Attrition (fictional data created by IBM), 1,470
 ### 03-M4 · SHAP + 3 CHRO recommendations — `todo`
 ### 03-M5 · Model card, fairness checks, README — `todo`
 - First step: score plain LR on the locked test set, once (k = 10% = 30 of 294 and the capacity table).
+- README must state the time window: the 16% leaver rate covers the dataset's unknown label window, not one month. "17 of ~38 leavers at k=30" is per ~235 employees over that window; at ~16%/year, a month has only ~3 leavers per 235 (found in the M3 interview Q3, 2026-11-21).
