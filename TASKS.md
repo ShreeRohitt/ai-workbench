@@ -52,7 +52,7 @@ Data: IBM HR Analytics Employee Attrition (fictional data created by IBM), 1,470
   - [x] Optional: LR + `overtime_and_level1` column (tests the bet's reasoning). Predictions (2026-11-04), PR-AUC change vs plain LR (0.533): Rohit **+3 points** (LR already gets close on that group: 45.9% predicted vs 51.7% actual); Claude **< 1 point** (JobRole, income, stock level already describe that group). **Result (2026-11-04):** PR-AUC 0.533 → 0.541 (+0.8 pts; wins 16/25 folds, 9 losses), precision@10% 0.603 → 0.605 (8 wins / 9 ties / 8 losses). Claude's call won; gain is within fold noise. Plain LR stays the baseline.
   - [x] One command prints PR-AUC and precision@10% as mean ± spread across folds, next to the random baseline (Claude: CLI + table)
   - [x] DECISIONS + LEARNINGS entries; 5-question interview (2026-11-05): Q1 metrics partial (no sizes; "25 folds = confident"), Q2 CV design partial (thought CV prevents overfitting), Q3 failure modes weak-partial (no "how to tell"; missed intervention effect), Q4 scaling partial (1 of ~5 issues), Q5 biggest weakness OK → re-practise Q2 + Q3
-### 03-M3 · LightGBM, imbalance handling, operating threshold — `in-progress` (branch `03-m3-lightgbm`)
+### 03-M3 · LightGBM, imbalance handling, operating threshold — `done` (merged 2026-11-21; LEARNINGS last bullet pending)
 - Goal: does a tree model beat LR on the same folds (settles the bet), and how many people should HR call per month, by measured numbers. Test set stays locked. Decided 2026-11-21 (Rohit): score it once at the start of M5, after M4 SHAP.
 - Baseline to beat: LR precision@10% 0.603 ± 0.091, PR-AUC 0.533 ± 0.069.
 - Acceptance:
