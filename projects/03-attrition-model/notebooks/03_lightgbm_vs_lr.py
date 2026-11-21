@@ -86,6 +86,18 @@ print("settings chosen across the 25 folds:")
 for setting, n in Counter(tuple(sorted(c.items())) for c in chosen).most_common():
     print(f"  {n:2d}x {dict(setting)}")
 
+# %% Optimism of the shortcut: best of 12 on plain CV vs nested CV. Claude (boilerplate).
+# Predictions (2026-11-21), best-of-12 PR-AUC: Rohit 0.570; Claude 0.558-0.565.
+plain = {
+    tuple(sorted(p.items())): cross_validate(train, lightgbm_model(NUMERIC, CATEGORICAL, **p))
+    for p in TUNING_GRID
+}
+means = pd.Series({k: v["pr_auc"].mean() for k, v in plain.items()}).sort_values()
+print(f"12 plain-CV PR-AUC averages: {means.min():.3f} to {means.max():.3f}")
+print(f"best of 12: {means.max():.3f} {dict(means.idxmax())}")
+print(f"nested CV:  {tuned['pr_auc'].mean():.3f}")
+print(f"optimism:   {means.max() - tuned['pr_auc'].mean():+.3f}")
+
 # %% Class weights: balanced vs plain, same 25 folds (predictions in TASKS.md, written first)
 lr_bal = cross_validate(train, logistic_model(NUMERIC, CATEGORICAL, "balanced"))
 lgbm_bal = cross_validate(train, lightgbm_model(NUMERIC, CATEGORICAL, "balanced"))
