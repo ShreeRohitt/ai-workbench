@@ -89,7 +89,17 @@ Data: IBM HR Analytics Employee Attrition (fictional data created by IBM), 1,470
       - The ± shrinks with k because each person is worth 1/k of precision (0.10 at k=10, 0.017 at k=60). Rohit's first answer explained the falling mean instead; got it after a worked example (k=5 → 0.20 per person, bigger ±).
   - [x] Tests pass (60), lint clean; DECISIONS entries (2026-11-20/21); LEARNINGS (Rohit; numbers corrected by Claude; "what I'd explain differently" still to write)
   - [x] 5-question interview (2026-11-21): Q1 ship LightGBM? partial (sized the gain in people, but mixed PR-AUC with precision@10% and ignored the 72% trap), Q2 nested CV partial (right idea, no direction/size/how-to-tell), Q3 failure modes weak-partial (3 causes, 2 checks without expected result; missed label-window mismatch and silent unknown-category bug), Q4 scaling partial (1 of ~5: per-plant; missed time-based validation, point-in-time features, monitoring), Q5 redo weak-partial (1 vague item) → re-practise Q3 + Q4
-### 03-M4 · SHAP + 3 CHRO recommendations — `todo`
+### 03-M4 · SHAP + 3 CHRO recommendations — `in-progress` (branch `03-m4-shap`)
+- Goal: explain why plain LR ranks someone high, and turn it into 3 recommendations a CHRO could act on and test. Test set stays locked (scored at the start of M5).
+- Plan approved 2026-11-21. Risks watched: SHAP explains the model, not causes; correlated columns split credit (hike/rating, the years columns); recommendations use levers only (no Age/Gender/MaritalStatus).
+- Acceptance:
+  - [ ] Step 1: SHAP for a linear model taught (Claude), check question answered
+  - [ ] Step 2: bet before any SHAP output: top 3 columns by mean |contribution| (Rohit + Claude)
+  - [ ] Step 3: `attrition/explain.py::lr_contributions` (Rohit): per-employee contributions, one-hot summed per original column; tests: base + contributions = model log-odds for every row; matches `shap.LinearExplainer` (Claude: tests + shap wiring)
+  - [ ] Step 4: global bar chart + beeswarm (Claude); top-5 stability across the 25 folds
+  - [ ] Step 5: LightGBM SHAP cross-check: same top drivers? overtime × Level 1 interaction? (Claude wiring, Rohit interprets)
+  - [ ] Step 6: 3 CHRO recommendations (Rohit): finding with size + comparison + n, lever, test plan (pilot with uncalled group), caveat
+  - [ ] Step 7: DECISIONS, LEARNINGS (Rohit), 5-question interview
 ### 03-M5 · Model card, fairness checks, README — `todo`
 - First step: score plain LR on the locked test set, once (k = 10% = 30 of 294 and the capacity table).
 - README must state the time window: the 16% leaver rate covers the dataset's unknown label window, not one month. "17 of ~38 leavers at k=30" is per ~235 employees over that window; at ~16%/year, a month has only ~3 leavers per 235 (found in the M3 interview Q3, 2026-11-21).
