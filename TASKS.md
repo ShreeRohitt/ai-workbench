@@ -86,7 +86,8 @@ Data: IBM HR Analytics Employee Attrition (fictional data created by IBM), 1,470
       - k=30: 17.0 of ~38 leavers (random 4.8, ~3.5×); precision 0.565 ± 0.083 ≈ 14–19 leavers per 30 calls; recall 0.446, so over half of leavers are missed.
       - Extra leavers per extra 10 calls: 5.6, 4.6, 3.4, 2.7, 1.5. Calls 51–60 are no better than random (1.6 per 10). Calls 31–40 are still ~2× random, so where to stop is a cost-per-call vs value-of-retention call for HR, not a model output.
       - The ± shrinks with k because each person is worth 1/k of precision (0.10 at k=10, 0.017 at k=60). Rohit's first answer explained the falling mean instead; got it after a worked example (k=5 → 0.20 per person, bigger ±).
-  - [ ] Tests pass, lint clean; DECISIONS, LEARNINGS (Rohit), 5-question interview
+  - [x] Tests pass (60), lint clean; DECISIONS entries (2026-11-20/21); LEARNINGS (Rohit; numbers corrected by Claude; "what I'd explain differently" still to write)
+  - [x] 5-question interview (2026-11-21): Q1 ship LightGBM? partial (sized the gain in people, but mixed PR-AUC with precision@10% and ignored the 72% trap), Q2 nested CV partial (right idea, no direction/size/how-to-tell), Q3 failure modes weak-partial (3 causes, 2 checks without expected result; missed label-window mismatch and silent unknown-category bug), Q4 scaling partial (1 of ~5: per-plant; missed time-based validation, point-in-time features, monitoring), Q5 redo weak-partial (1 vague item) → re-practise Q3 + Q4
 ### 03-M4 · SHAP + 3 CHRO recommendations — `todo`
 ### 03-M5 · Model card, fairness checks, README — `todo`
 - First step: score plain LR on the locked test set, once (k = 10% = 30 of 294 and the capacity table).
