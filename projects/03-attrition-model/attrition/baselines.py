@@ -66,23 +66,33 @@ def logistic_model(
     """
 
     def score(fit_df: pd.DataFrame, eval_df: pd.DataFrame) -> np.ndarray:
-        preprocess = ColumnTransformer(
-            [
-                ("num", StandardScaler(), numeric),
-                ("cat", OneHotEncoder(handle_unknown="ignore"), categorical),
-            ]
-        )
-        model = Pipeline(
-            [
-                ("preprocess", preprocess),
-                ("clf", LogisticRegression(max_iter=1000, class_weight=class_weight)),
-            ]
-        )
+        model = logistic_pipeline(numeric, categorical, class_weight)
         features = list(numeric) + list(categorical)
         model.fit(fit_df[features], fit_df[TARGET])
         return model.predict_proba(eval_df[features])[:, 1]
 
     return score
+
+
+def logistic_pipeline(
+    numeric: list[str], categorical: list[str], class_weight: str | None = None
+) -> Pipeline:
+    """The unfitted pipeline inside `logistic_model`, so M4 can read its coefficients.
+
+    Moved out of `logistic_model` unchanged (Claude, 2026-11-21).
+    """
+    preprocess = ColumnTransformer(
+        [
+            ("num", StandardScaler(), numeric),
+            ("cat", OneHotEncoder(handle_unknown="ignore"), categorical),
+        ]
+    )
+    return Pipeline(
+        [
+            ("preprocess", preprocess),
+            ("clf", LogisticRegression(max_iter=1000, class_weight=class_weight)),
+        ]
+    )
 
 
 def lightgbm_model(

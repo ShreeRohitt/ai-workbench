@@ -93,8 +93,10 @@ Data: IBM HR Analytics Employee Attrition (fictional data created by IBM), 1,470
 - Goal: explain why plain LR ranks someone high, and turn it into 3 recommendations a CHRO could act on and test. Test set stays locked (scored at the start of M5).
 - Plan approved 2026-11-21. Risks watched: SHAP explains the model, not causes; correlated columns split credit (hike/rating, the years columns); recommendations use levers only (no Age/Gender/MaritalStatus).
 - Acceptance:
-  - [ ] Step 1: SHAP for a linear model taught (Claude), check question answered
-  - [ ] Step 2: bet before any SHAP output: top 3 columns by mean |contribution| (Rohit + Claude)
+  - [x] Step 1: SHAP for a linear model taught (Claude; toy 3-column example, coefficients, sigmoid). Check Q (contribution at exactly average income): Rohit answered −0.15 × 6 (used the value, not value − average); correct answer 0.
+  - [x] Step 2: bet before any SHAP output (2026-11-21), top 3 columns by mean |contribution| in plain LR:
+    - Rohit: **OverTime** (seen the correlation), **MonthlyIncome**, **JobLevel or YearsAtCompany** (undecided; both scored)
+    - Claude: **OverTime**, **JobRole** (9 one-hot columns summed, collects credit), **StockOptionLevel** (level 0 covers all 373 Single employees on train). MonthlyIncome and JobLevel are strongly related and will split credit, so neither makes the top 3.
   - [ ] Step 3: `attrition/explain.py::lr_contributions` (Rohit): per-employee contributions, one-hot summed per original column; tests: base + contributions = model log-odds for every row; matches `shap.LinearExplainer` (Claude: tests + shap wiring)
   - [ ] Step 4: global bar chart + beeswarm (Claude); top-5 stability across the 25 folds
   - [ ] Step 5: LightGBM SHAP cross-check: same top drivers? overtime × Level 1 interaction? (Claude wiring, Rohit interprets)
