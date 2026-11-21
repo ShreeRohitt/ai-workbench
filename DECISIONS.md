@@ -64,3 +64,28 @@
 - Chose: keep plain logistic regression as the baseline; the `LR + overtime_and_level1` row stays in the results table as a recorded experiment.
 - Alternatives: add the column to the baseline.
 - Why: on the same 25 folds it moved PR-AUC 0.533 → 0.541 (16 wins, 9 losses) and precision@10% 0.603 → 0.605 (8 wins, 9 ties, 8 losses), both within fold noise. The survey columns, by contrast, won 22 of 25. LR already gets close on that group without the column (45.9% predicted vs 51.7% actual on train). This weakens the stated reason for the "LightGBM +20 PR-AUC" bet but doesn't settle it: trees may still find other combinations or curved effects. M3 settles it.
+
+## 2026-11-20 · 03: plain logistic regression stays the model; LightGBM is not adopted
+- Chose (Rohit): plain LR (NUMERIC + CATEGORICAL, no survey, no class weights) is the M3 model and goes into M4 SHAP.
+- Alternatives: LightGBM with fixed small-data defaults; LightGBM tuned by nested CV (12-setting grid, 3 inner folds); carry both to M5 and pick on the test set.
+- Why (Rohit): LR is simpler and LightGBM gains under half a person per list. Paired, same 25 folds: LightGBM PR-AUC +0.020 (18 wins / 7 losses), precision@10% +0.003 (13 / 5 ties / 7); tuned LightGBM PR-AUC +0.022 (19 / 6), precision@10% +0.017 (10 / 9 / 6), i.e. ~0.4 more leavers per 24 calls. Fit-vs-eval PR-AUC gap: LR +0.056, LightGBM +0.258. Picking between models on the test set was rejected: the test set is for one final score, not for choosing. Settles the 03-M1 bet: +0.02 measured vs +0.20 bet; the limit is the information in the columns, not the model.
+
+## 2026-11-20 · 03: no class weights
+- Chose: no `class_weight="balanced"` for either model.
+- Alternatives: balanced weights (leavers count ~5× in the loss).
+- Why: it hurt LR on the same 25 folds (PR-AUC −0.024, 2 wins / 23 losses; precision@10% −0.030) and did nothing for LightGBM (PR-AUC −0.007, 9 / 16). We rank people and take the top k, so shifting predicted probabilities up doesn't help; reweighting cuts the effective sample from 1,176 to 637 rows.
+
+## 2026-11-20 · 03: PercentSalaryHike and PerformanceRating stay in, with a measured fallback
+- Chose: keep both in NUMERIC (confirms 2026-11-01).
+- Alternatives: drop both now, since their recording time is undocumented.
+- Why: the sensitivity row shows the model doesn't depend on them: dropping both moved PR-AUC +0.003 (std of per-fold diff 0.008; 17 wins / 8 losses) and precision@10% +0.007 (8 / 13 ties / 4), within noise. Keeping them leaves every earlier row comparable. If review timing turns out to be after the prediction date, drop both at no measured cost. Note: PerformanceRating = 4 exactly when PercentSalaryHike ≥ 20% on train (991/0, 0/185), so the two columns are redundant and SHAP in M4 may split credit between them.
+
+## 2026-11-20 · 03: HR picks k from the capacity curve; the model doesn't
+- Chose: report precision and recall for k = 10…60 per ~235 employees (`attrition.capacity`) instead of a single k. k = 30 stays the default for headline numbers (2026-10-28).
+- Alternatives: fix k = 30 only; pick k where precision drops below a threshold.
+- Why: extra leavers per extra 10 calls fall 5.6 → 4.6 → 3.4 → 2.7 → 1.5; calls 51–60 find no more than random (1.6 per 10), so going past 50 calls isn't worth it. Between 30 and 50 the calls are still 1.7–2× random, so the stopping point depends on cost per call vs value of retaining one person, which is HR's call. At k = 30: 17.0 of ~38 leavers, precision 0.565 ± 0.083, recall 0.446.
+
+## 2026-11-21 · 03: the locked test set is scored once, at the start of M5
+- Chose (Rohit): score plain LR on the test set at the start of M5, after M4 SHAP, together with the fairness checks.
+- Alternatives: score it now, at the end of M3.
+- Why: if SHAP in M4 shows the model leaning on something suspicious and we change the features, a test score taken now would be used up and a second look isn't a fair test. Scoring after M4 means the test set is used once, on the final model.

@@ -55,3 +55,11 @@ compare(lr_survey, lr, "pr_auc", "LR+survey", "LR")
 #    so "not noise" does not mean "safe": the survey's timing is unknown.
 # 4. Decision: deploy LR without survey (DECISIONS 2026-11-02). Caveat: the 25 folds reuse the
 #    same 1,176 people, so they are not independent and these counts overstate certainty.
+
+# %% Sensitivity (03-M3): LR without PercentSalaryHike + PerformanceRating vs plain LR. Claude.
+from attrition.report import NO_HIKE_RATING  # noqa: E402
+
+lr_no_hike = cross_validate(train, logistic_model(NO_HIKE_RATING, CATEGORICAL))
+for metric in ["pr_auc", "precision_at_k"]:
+    compare(lr_no_hike, lr, metric, "LR without hike + rating", "LR")
+    print(f"  std of per-fold diff {(lr_no_hike[metric] - lr[metric]).std():.3f}")
