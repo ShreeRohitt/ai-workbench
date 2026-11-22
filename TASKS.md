@@ -100,7 +100,11 @@ Data: IBM HR Analytics Employee Attrition (fictional data created by IBM), 1,470
     - **Result (2026-11-21, plain LR fit on all 1,176 train rows, background = train):** mean |contribution| (log-odds): OverTime 0.610, TotalWorkingYears 0.564, JobRole 0.483, StockOptionLevel 0.425, YearsSinceLastPromotion 0.338 … JobLevel 0.127 (#14), YearsAtCompany 0.160 (#12), MonthlyIncome 0.038 (#18 of 19). Rohit 1/3, Claude 2/3. MonthlyIncome near zero despite the EDA gap (low band 29% vs ~10%): credit split with TotalWorkingYears/JobLevel, not "pay doesn't matter".
     - Highest-scored leaver (row 457, p = 0.875): TotalWorkingYears 0 (+1.06), OverTime Yes (+1.06), Sales Representative (+0.73), Travel_Frequently (+0.68), StockOptionLevel 0 (+0.50); base −2.33 (p 0.089) + contributions = 1.945. YearsAtCompany 0 pushes *down* (−0.25): sign flip from correlated years columns.
   - [x] Step 3: `attrition/explain.py::lr_contributions` (written by Claude at Rohit's request, walked through): per-employee contributions, one-hot summed per original column; tests: base + contributions = model log-odds for every row; matches `shap.LinearExplainer` (Claude: tests + shap wiring)
-  - [ ] Step 4: global bar chart + beeswarm (Claude); top-5 stability across the 25 folds
+  - [x] Step 4: global bar chart + beeswarm (Claude); top-5 stability across the 25 folds. Decided (Rohit, 2026-11-22): correlated columns reported as groups (`features.GROUPS`: career stage, tenure here, review).
+    - `uv run python -m attrition.importance`; figures `docs/figures/importance_grouped.png`, `contributions_strip.png`.
+    - Grouped mean |contribution| (full train; fold mean ± std over 25 folds; times in top 5): OverTime 0.610 (0.610 ± 0.055; 25), career stage 0.499 (0.519 ± 0.079; 25), JobRole 0.483 (0.475 ± 0.048; 25), StockOptionLevel 0.425 (0.429 ± 0.086; 24), tenure here 0.355 (0.363 ± 0.050; 16), NumCompaniesWorked 0.300 (7), Department 0.269 (3) … review 0.070, Education 0.002. Top 4 stable; 5th place is not.
+    - career stage group (0.499) < TotalWorkingYears alone (0.564): JobLevel/MonthlyIncome push the other way inside the group, so the single-column number overstated it.
+    - Interpretation (Rohit): pending.
   - [ ] Step 5: LightGBM SHAP cross-check: same top drivers? overtime × Level 1 interaction? (Claude wiring, Rohit interprets)
   - [ ] Step 6: 3 CHRO recommendations (Rohit): finding with size + comparison + n, lever, test plan (pilot with uncalled group), caveat
   - [ ] Step 7: DECISIONS, LEARNINGS (Rohit), 5-question interview

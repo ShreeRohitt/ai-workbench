@@ -87,3 +87,13 @@ def test_matches_shap_linear_explainer(data, model):
     )
     _, contrib = lr_contributions(model, X(data), X(data))
     np.testing.assert_allclose(contrib.to_numpy(), expected.to_numpy(), atol=1e-8)
+
+
+def test_group_contributions_sums_groups_and_keeps_the_rest(data, model):
+    from attrition.explain import group_contributions
+
+    _, contrib = lr_contributions(model, X(data), X(data))
+    grouped = group_contributions(contrib, {"pay and time": ["income", "years"]})
+    assert list(grouped.columns) == ["pay and time", "overtime", "role"]
+    np.testing.assert_allclose(grouped["pay and time"], contrib["income"] + contrib["years"])
+    np.testing.assert_allclose(grouped.sum(axis=1), contrib.sum(axis=1))

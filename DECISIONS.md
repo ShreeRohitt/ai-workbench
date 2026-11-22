@@ -89,3 +89,8 @@
 - Chose (Rohit): score plain LR on the test set at the start of M5, after M4 SHAP, together with the fairness checks.
 - Alternatives: score it now, at the end of M3.
 - Why: if SHAP in M4 shows the model leaning on something suspicious and we change the features, a test score taken now would be used up and a second look isn't a fair test. Scoring after M4 means the test set is used once, on the final model.
+
+## 2026-11-22 · 03: SHAP is reported for groups of correlated columns
+- Chose (Rohit): report contributions for three groups (`features.GROUPS`): career stage (MonthlyIncome, JobLevel, TotalWorkingYears), tenure here (YearsAtCompany, YearsInCurrentRole, YearsWithCurrManager, YearsSinceLastPromotion), review (PercentSalaryHike, PerformanceRating); other columns stay single. Per-column numbers kept as a secondary view.
+- Alternatives: per-column only, with a written caveat.
+- Why: on train MonthlyIncome and JobLevel correlate 0.95, both ~0.78 with TotalWorkingYears; the years columns 0.50–0.78. LR splits credit inside such groups arbitrarily: MonthlyIncome came 18th of 19 alone despite the EDA pay gap, and YearsAtCompany = 0 pushed a new joiner's risk *down*. Contributions add up, so a group total is exact SHAP, and the arbitrary split inside the group cancels out.

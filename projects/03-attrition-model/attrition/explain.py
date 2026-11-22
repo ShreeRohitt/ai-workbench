@@ -56,3 +56,17 @@ def lr_contributions(
         index=X.index,
     )
     return base, contributions
+
+
+def group_contributions(contributions: pd.DataFrame, groups: dict[str, list[str]]) -> pd.DataFrame:
+    """Sum each group's columns into one column; columns in no group are kept as they are.
+
+    Exact, because contributions add up. Group columns come first, in `groups` order.
+    (Boilerplate: Claude.)
+    """
+    grouped = {name: contributions[cols].sum(axis=1) for name, cols in groups.items()}
+    in_a_group = {col for cols in groups.values() for col in cols}
+    rest = [col for col in contributions.columns if col not in in_a_group]
+    return pd.concat(
+        [pd.DataFrame(grouped, index=contributions.index), contributions[rest]], axis=1
+    )
