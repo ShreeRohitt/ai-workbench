@@ -43,19 +43,40 @@ def lr_contributions(
     per_column = coef * (z - average)  # broadcasting: every row, every transformed column
     base = float(clf.intercept_[0] + coef @ average)
 
-    # Sum one-hot columns back to their original column: cat__JobRole_Sales Executive -> JobRole
+    return base, _sum_to_original(per_column, pre, X.index)
+
+
+def _sum_to_original(per_column: np.ndarray, pre, index: pd.Index) -> pd.DataFrame:
+    """Sum one-hot columns back to their original: cat__JobRole_Sales Executive -> JobRole."""
     names = pre.get_feature_names_out()
-    originals = [col for _, _, cols in pre.transformers_ if _ != "remainder" for col in cols]
-    contributions = pd.DataFrame(
+    originals = [col for name, _, cols in pre.transformers_ if name != "remainder" for col in cols]
+    return pd.DataFrame(
         {
             col: per_column[
                 :, [n == f"num__{col}" or n.startswith(f"cat__{col}_") for n in names]
             ].sum(axis=1)
             for col in originals
         },
-        index=X.index,
+        index=index,
     )
-    return base, contributions
+
+
+def tree_contributions(model: Pipeline, X: pd.DataFrame) -> tuple[float, pd.DataFrame]:
+    """SHAP values for a fitted `lightgbm_pipeline`, on the log-odds score, one column per
+    original column. Uses shap.TreeExplainer (tree_path_dependent: the "average" comes from
+    the training data stored in the trees). (Wiring: Claude.)
+
+    So that:  base + contributions.sum(axis=1) == the model's raw (log-odds) score
+    """
+    import shap
+
+    pre = model.named_steps["preprocess"]
+    explainer = shap.TreeExplainer(model.named_steps["clf"])
+    values = explainer.shap_values(_dense(pre.transform(X)))
+    if isinstance(values, list):  # older shap: one array per class
+        values = values[1]
+    base = np.ravel(explainer.expected_value)[-1]
+    return float(base), _sum_to_original(np.asarray(values), pre, X.index)
 
 
 def group_contributions(contributions: pd.DataFrame, groups: dict[str, list[str]]) -> pd.DataFrame:

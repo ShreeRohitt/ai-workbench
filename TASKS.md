@@ -106,6 +106,11 @@ Data: IBM HR Analytics Employee Attrition (fictional data created by IBM), 1,470
     - career stage group (0.499) < TotalWorkingYears alone (0.564): JobLevel/MonthlyIncome push the other way inside the group, so the single-column number overstated it.
     - Interpretation (Rohit): pending.
   - [ ] Step 5: LightGBM SHAP cross-check: same top drivers? overtime × Level 1 interaction? (Claude wiring, Rohit interprets)
+    - Wiring done 2026-11-23: `baselines.lightgbm_pipeline` extracted (CV unchanged: PR-AUC 0.554), `explain.tree_contributions` (additivity test), `notebooks/04_shap.py`. Both models fit on all train, explained on train.
+    - Ranking (grouped, mean |contribution|): LightGBM top 5 = career stage 0.535, OverTime 0.505, StockOptionLevel 0.436, tenure here 0.333, DistanceFromHome 0.288. Same as LR except JobRole: LR #3 (0.483) → LightGBM #7 (0.260).
+    - StockOptionLevel push by level (n; leave rate): 0 (503; 24.3%) LR +0.50 / LGBM +0.51; 1 (482; 10.0%) −0.13 / −0.38; 2 (125; 8.0%) −0.76 / −0.39; 3 (66; 15.2%) −1.39 / −0.37. LR's one straight line makes level 3 look safest; LightGBM learns a step: none vs any.
+    - OverTime push by JobLevel: LR constant (+1.06 yes / −0.43 no). LightGBM yes−no gap 1.45 at Level 1 vs 1.11 at Level 2+ (leave rates: L1 51.7% vs 17.1%, n 116/304; L2+ 16.5% vs 7.7%, n 224/532). A real but modest interaction, consistent with M2's +0.008 PR-AUC from the interaction column.
+    - Interpretation (Rohit): pending.
   - [ ] Step 6: 3 CHRO recommendations (Rohit): finding with size + comparison + n, lever, test plan (pilot with uncalled group), caveat
   - [ ] Step 7: DECISIONS, LEARNINGS (Rohit), 5-question interview
 ### 03-M5 · Model card, fairness checks, README — `todo`

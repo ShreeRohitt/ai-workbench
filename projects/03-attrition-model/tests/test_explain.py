@@ -97,3 +97,14 @@ def test_group_contributions_sums_groups_and_keeps_the_rest(data, model):
     assert list(grouped.columns) == ["pay and time", "overtime", "role"]
     np.testing.assert_allclose(grouped["pay and time"], contrib["income"] + contrib["years"])
     np.testing.assert_allclose(grouped.sum(axis=1), contrib.sum(axis=1))
+
+
+def test_tree_contributions_add_up_to_the_raw_score(data):
+    from attrition.baselines import lightgbm_pipeline
+    from attrition.explain import tree_contributions
+
+    model = lightgbm_pipeline(NUMERIC, CATEGORICAL).fit(X(data), data[TARGET])
+    base, contrib = tree_contributions(model, X(data))
+    assert list(contrib.columns) == NUMERIC + CATEGORICAL
+    raw = model.predict(X(data), raw_score=True)
+    np.testing.assert_allclose(base + contrib.sum(axis=1), raw, atol=1e-6)

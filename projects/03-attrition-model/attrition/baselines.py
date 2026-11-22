@@ -112,27 +112,39 @@ def lightgbm_model(
             f"unknown LightGBM settings {sorted(unknown)}; valid: {sorted(LGBM_DEFAULTS)}"
         )
 
-    param = {**LGBM_DEFAULTS, **overrides}
-
     def score(fit_df: pd.DataFrame, eval_df: pd.DataFrame) -> np.ndarray:
-        preprocess = ColumnTransformer(
-            [
-                ("num", "passthrough", numeric),
-                ("cat", OneHotEncoder(handle_unknown="ignore", sparse_output=False), categorical),
-            ]
-        )
-        model = Pipeline(
-            [
-                ("preprocess", preprocess),
-                ("clf", lgb.LGBMClassifier(**param, class_weight=class_weight)),
-            ]
-        )
+        model = lightgbm_pipeline(numeric, categorical, class_weight, **overrides)
         features = list(numeric) + list(categorical)
 
         model.fit(fit_df[features], fit_df[TARGET])
         return model.predict_proba(eval_df[features])[:, 1]
 
     return score
+
+
+def lightgbm_pipeline(
+    numeric: list[str], categorical: list[str], class_weight: str | None = None, **overrides
+) -> Pipeline:
+    """The unfitted pipeline inside `lightgbm_model`, so M4 can explain it.
+
+    Moved out of `lightgbm_model` unchanged (Claude, 2026-11-23). overrides are checked by
+    `lightgbm_model`; here they are merged over LGBM_DEFAULTS as-is.
+    """
+    preprocess = ColumnTransformer(
+        [
+            ("num", "passthrough", numeric),
+            ("cat", OneHotEncoder(handle_unknown="ignore", sparse_output=False), categorical),
+        ]
+    )
+    return Pipeline(
+        [
+            ("preprocess", preprocess),
+            (
+                "clf",
+                lgb.LGBMClassifier(**{**LGBM_DEFAULTS, **overrides}, class_weight=class_weight),
+            ),
+        ]
+    )
 
 
 def tuned_lightgbm_model(
