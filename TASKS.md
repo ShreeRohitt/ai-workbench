@@ -89,7 +89,7 @@ Data: IBM HR Analytics Employee Attrition (fictional data created by IBM), 1,470
       - The ± shrinks with k because each person is worth 1/k of precision (0.10 at k=10, 0.017 at k=60). Rohit's first answer explained the falling mean instead; got it after a worked example (k=5 → 0.20 per person, bigger ±).
   - [x] Tests pass (60), lint clean; DECISIONS entries (2026-11-20/21); LEARNINGS (Rohit; numbers corrected by Claude; "what I'd explain differently" still to write)
   - [x] 5-question interview (2026-11-21): Q1 ship LightGBM? partial (sized the gain in people, but mixed PR-AUC with precision@10% and ignored the 72% trap), Q2 nested CV partial (right idea, no direction/size/how-to-tell), Q3 failure modes weak-partial (3 causes, 2 checks without expected result; missed label-window mismatch and silent unknown-category bug), Q4 scaling partial (1 of ~5: per-plant; missed time-based validation, point-in-time features, monitoring), Q5 redo weak-partial (1 vague item) → re-practise Q3 + Q4
-### 03-M4 · SHAP + 3 CHRO recommendations — `in-progress` (branch `03-m4-shap`)
+### 03-M4 · SHAP + 3 CHRO recommendations — `done` (merged 2026-11-25, PR #1)
 - Goal: explain why plain LR ranks someone high, and turn it into 3 recommendations a CHRO could act on and test. Test set stays locked (scored at the start of M5).
 - Plan approved 2026-11-21. Risks watched: SHAP explains the model, not causes; correlated columns split credit (hike/rating, the years columns); recommendations use levers only (no Age/Gender/MaritalStatus).
 - Acceptance:
@@ -112,8 +112,8 @@ Data: IBM HR Analytics Employee Attrition (fictional data created by IBM), 1,470
     - OverTime push by JobLevel: LR constant (+1.06 yes / −0.43 no). LightGBM yes−no gap 1.45 at Level 1 vs 1.11 at Level 2+ (leave rates: L1 51.7% vs 17.1%, n 116/304; L2+ 16.5% vs 7.7%, n 224/532). A real but modest interaction, consistent with M2's +0.008 PR-AUC from the interaction column.
     - Interpretation (Rohit, 2026-11-23; review notes in brackets): JobRole drops because level and income already carry it, so LightGBM credits career stage [right]. LightGBM's stock pattern fits the data better: only level 0 pushes up [right; "level 3 less negative" overstated, −0.37 vs −0.38/−0.39 is flat]. Overtime × Level 1 is "big" [wrong: LR without it already predicts 45.9% vs 51.7% actual for that group; adding the column gained +0.008 PR-AUC].
   - [x] Step 6: 3 CHRO recommendations: `docs/chro_recommendations.md` (2026-11-23). Rohit drafted overtime (+ Level 1 targeting) and Sales Rep; review: overtime test had no control group, Sales Rep lever (travel) not from evidence, #3 missing. Final doc written by Claude at Rohit's request: (1) overtime cap, Level 1 first; (2) early-career support (replaces Sales Rep; covers it via career stage); (3) stock none → some, with Rohit's Single-employee caveat. Pilot sizes are planning estimates (normal approx., 80% power), not measurements.
-  - [ ] Step 7: DECISIONS, LEARNINGS (Rohit), 5-question interview
-    - DECISIONS: done (`0c4d3af`). LEARNINGS (Rohit): pending.
+  - [x] Step 7: DECISIONS, LEARNINGS (Rohit), 5-question interview
+    - DECISIONS: done (`0c4d3af`). LEARNINGS (Rohit): done (`1c8336c`).
     - 5-question interview (2026-11-24):
       - Q1 why contributions over coefficients, why groups: **gap** ("I don't know") → **good** after re-practise (contributions per employee vs average, on one scale; one-hot dummies summed per column; correlated columns split one signal in opposite directions, e.g. row 457 TotalWorkingYears +1.06 vs YearsAtCompany −0.25). Still missing unprompted: contributions add up to the prediction.
       - Q2 "overtime is the #1 cause": **partial, good** (correlation ≠ cause; controlled split). Missing: the rewritten sentence, likely real drivers (role, level, workload), random assignment, outcome + duration given ~3 leavers/month per 235.
@@ -121,6 +121,14 @@ Data: IBM HR Analytics Employee Attrition (fictional data created by IBM), 1,470
       - Q4 50,000 employees, monthly per-employee explanations: **weak** (per-business-unit breakdown only). Missed: explanation stability, privacy/access to risk scores, intervention effect (missed again after M2 Q3), drift + versioned explanations, proxy fairness.
       - Q5 stock-options pilot: **partial** (don't roll out to all; test first). Choosing married-only selects on MaritalStatus (breaks the M4 no-MaritalStatus-lever rule) and doesn't separate stock from marital status. Better: check level 0 effect on married/divorced train rows, then randomise among level-0 employees, balanced by marital status and level.
       - Re-practise: **Q4** (scaling + intervention effect, second milestone in a row), Q1 "adds up to the prediction".
-### 03-M5 · Model card, fairness checks, README — `todo`
+### 03-M5 · Model card, fairness checks, README — `in-progress` (branch `03-m5-model-card`)
+- Goal: score the locked test set once, check fairness, and write the model card and project README so the project is portfolio-ready.
+- Plan approved 2026-11-25. Decided (Rohit): fairness checks run on out-of-fold CV predictions (1,176 train rows), not the 294 test rows.
+- Acceptance:
+  - [ ] Step 1: Rohit's bet written first (test PR-AUC, precision@10%; CV anchor: LR 0.533 / 0.603), then plain LR scored on test **once** (k = 30 of 294) + capacity table. Rohit writes the scoring step, Claude reviews.
+  - [ ] Step 2: fairness by Gender, Age band, MaritalStatus on OOF predictions: flag rate at k=10%, precision, recall per group, with n and uncertainty. Rohit: metric function; Claude: plotting.
+  - [ ] Step 3: one-page model card (intended use, out-of-scope uses, data + label window, metrics with ±, fairness, limitations). Rohit drafts, Claude reviews.
+  - [ ] Step 4: project README (problem, approach, results table from code that ran, limitations, what's next).
+  - [ ] Step 5: DECISIONS, LEARNINGS (Rohit), 5-question interview (includes re-practise of M4 Q4: scaling + intervention effect).
 - First step: score plain LR on the locked test set, once (k = 10% = 30 of 294 and the capacity table).
 - README must state the time window: the 16% leaver rate covers the dataset's unknown label window, not one month. "17 of ~38 leavers at k=30" is per ~235 employees over that window; at ~16%/year, a month has only ~3 leavers per 235 (found in the M3 interview Q3, 2026-11-21).
