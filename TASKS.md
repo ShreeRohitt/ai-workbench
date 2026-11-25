@@ -126,6 +126,7 @@ Data: IBM HR Analytics Employee Attrition (fictional data created by IBM), 1,470
 - Plan approved 2026-11-25. Decided (Rohit): fairness checks run on out-of-fold CV predictions (1,176 train rows), not the 294 test rows.
 - Acceptance:
   - [ ] Step 1: Rohit's bet written first (test PR-AUC, precision@10%; CV anchor: LR 0.533 / 0.603), then plain LR scored on test **once** (k = 30 of 294) + capacity table. Rohit writes the scoring step, Claude reviews.
+    - Bets (2026-11-25, before any test code), plain LR on test (294 rows, 47 leavers): Rohit **PR-AUC 0.48, 15 of top 30 leavers (precision 0.50)**; Claude **PR-AUC 0.50–0.58, 16–20 of top 30** (CV level; final fit on all 1,176 rows helps a little; with only 47 leavers the test number is noisy, roughly ±0.06 PR-AUC and ±3 hits).
   - [ ] Step 2: fairness by Gender, Age band, MaritalStatus on OOF predictions: flag rate at k=10%, precision, recall per group, with n and uncertainty. Rohit: metric function; Claude: plotting.
   - [ ] Step 3: one-page model card (intended use, out-of-scope uses, data + label window, metrics with ±, fairness, limitations). Rohit drafts, Claude reviews.
   - [ ] Step 4: project README (problem, approach, results table from code that ran, limitations, what's next).
