@@ -29,6 +29,19 @@ SURVEY = [
     "WorkLifeBalance",
 ]
 
+# Correlated columns reported together in M4 (DECISIONS 2026-11-22): LR splits credit inside a
+# group arbitrarily, but the group's total contribution is exact and stable.
+GROUPS = {
+    "career stage": ["MonthlyIncome", "JobLevel", "TotalWorkingYears"],
+    "tenure here": [
+        "YearsAtCompany",
+        "YearsInCurrentRole",
+        "YearsWithCurrManager",
+        "YearsSinceLastPromotion",
+    ],
+    "review": ["PercentSalaryHike", "PerformanceRating"],
+}
+
 
 def add_overtime_and_level1(df: pd.DataFrame) -> pd.DataFrame:
     """Return a copy of df with an int 0/1 column `overtime_and_level1`.

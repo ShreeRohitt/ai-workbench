@@ -89,3 +89,23 @@
 - Chose (Rohit): score plain LR on the test set at the start of M5, after M4 SHAP, together with the fairness checks.
 - Alternatives: score it now, at the end of M3.
 - Why: if SHAP in M4 shows the model leaning on something suspicious and we change the features, a test score taken now would be used up and a second look isn't a fair test. Scoring after M4 means the test set is used once, on the final model.
+
+## 2026-11-22 · 03: SHAP is reported for groups of correlated columns
+- Chose (Rohit): report contributions for three groups (`features.GROUPS`): career stage (MonthlyIncome, JobLevel, TotalWorkingYears), tenure here (YearsAtCompany, YearsInCurrentRole, YearsWithCurrManager, YearsSinceLastPromotion), review (PercentSalaryHike, PerformanceRating); other columns stay single. Per-column numbers kept as a secondary view.
+- Alternatives: per-column only, with a written caveat.
+- Why: on train MonthlyIncome and JobLevel correlate 0.95, both ~0.78 with TotalWorkingYears; the years columns 0.50–0.78. LR splits credit inside such groups arbitrarily: MonthlyIncome came 18th of 19 alone despite the EDA pay gap, and YearsAtCompany = 0 pushed a new joiner's risk *down*. Contributions add up, so a group total is exact SHAP, and the arbitrary split inside the group cancels out.
+
+## 2026-11-23 · 03: how SHAP is computed
+- Chose: plain LR explained exactly as coef × (transformed value − its mean over the training rows), one-hot columns summed back to the original column (`explain.lr_contributions`); LightGBM explained with `shap.TreeExplainer` (tree_path_dependent) as a cross-check only (`explain.tree_contributions`).
+- Alternatives: KernelExplainer (model-agnostic, slow, approximate); coefficients alone; permutation importance on precision@k.
+- Why: for a linear model the exact SHAP value is that formula, so it can be written and tested by hand; tests check it adds up to the model's log-odds score and matches `shap.LinearExplainer` to 1e-8. The average is fixed to the training rows so explanations are comparable across employees. Coefficients alone hide how many people each column affects; permutation importance is a possible M5 add-on.
+
+## 2026-11-23 · 03: StockOptionLevel stays one numeric column in LR (known limitation)
+- Chose: keep the M3 model unchanged; record that LR forces a straight line through stock levels; recommendations use LightGBM's shape instead.
+- Alternatives: one-hot the four levels; a 0/1 "has any stock" column; test either with a paired CV row before M5.
+- Why: on train the leave rate is 24.3% (level 0, n = 503), 10.0% (1, n = 482), 8.0% (2, n = 125), 15.2% (3, n = 66). LR's pushes fall by an equal 0.63 per level, making level 3 look safest (−1.39); LightGBM learns a step (+0.51 for level 0, about −0.38 for 1–3). Only 66 people are at level 3, so the ranking impact is expected to be small, but it has not been measured. Goes into the M5 model card.
+
+## 2026-11-23 · 03: CHRO recommendations use early career, not Sales Representative
+- Chose: (1) overtime cap, Level 1 first; (2) early-career support; (3) stock none → some. Each has a randomised pilot with a rough detectable-effect size and a caveat (`docs/chro_recommendations.md`).
+- Alternatives: Sales Representative as #2 (Rohit's draft, with a travel lever).
+- Why: Sales Reps leave at 41.7% but n = 60 (± ~6 points), JobRole falls from #3 (LR) to #7 (LightGBM) once career stage is available, and the travel lever had no supporting evidence. Early career (≤ 2 years worked) is 51.0% (n = 96) vs 13.1% (n = 1,080), is #1–2 in both models and stable across folds, and covers most of the Sales Rep signal.
