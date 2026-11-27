@@ -1,0 +1,58 @@
+{
+  "model": "plain LR (NUMERIC + CATEGORICAL)",
+  "date": "2026-11-27",
+  "n_train": 1176,
+  "n_test": 294,
+  "n_test_leavers": 47,
+  "pr_auc": 0.49860348498799767,
+  "capacity": [
+    {
+      "k": 10,
+      "share_called": 0.034013605442176874,
+      "precision": 0.8,
+      "recall": 0.1702127659574468,
+      "leavers_found": 8,
+      "random_finds": 1.5986394557823131
+    },
+    {
+      "k": 20,
+      "share_called": 0.06802721088435375,
+      "precision": 0.65,
+      "recall": 0.2765957446808511,
+      "leavers_found": 13,
+      "random_finds": 3.1972789115646263
+    },
+    {
+      "k": 30,
+      "share_called": 0.10204081632653061,
+      "precision": 0.6,
+      "recall": 0.3829787234042553,
+      "leavers_found": 18,
+      "random_finds": 4.795918367346939
+    },
+    {
+      "k": 40,
+      "share_called": 0.1360544217687075,
+      "precision": 0.5,
+      "recall": 0.425531914893617,
+      "leavers_found": 20,
+      "random_finds": 6.394557823129253
+    },
+    {
+      "k": 50,
+      "share_called": 0.17006802721088435,
+      "precision": 0.46,
+      "recall": 0.48936170212765956,
+      "leavers_found": 23,
+      "random_finds": 7.993197278911565
+    },
+    {
+      "k": 60,
+      "share_called": 0.20408163265306123,
+      "precision": 0.4,
+      "recall": 0.5106382978723404,
+      "leavers_found": 24,
+      "random_finds": 9.591836734693878
+    }
+  ]
+}
